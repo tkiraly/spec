@@ -4,7 +4,7 @@ Copyright © 2015 LoRa Alliance, Inc. All rights reserved.
 NOTICE OF USE AND DISCLOSURE 
 =============================
 
-Copyright © LoRa Alliance, Inc. (2015). All Rights Reserved.
+Copyright © LoRa Alliance, Inc. (2016). All Rights Reserved.
 
 The information within this document is the property of the LoRa Alliance ("The Alliance") and its use and disclosure are subject to LoRa Alliance Corporate Bylaws, Intellectual Property Rights (IPR) Policy and Membership Agreements.
 
@@ -30,9 +30,9 @@ LoRaWAN™ Specification
 **Authors**:  
 N. Sornin (Semtech), M. Luis (Semtech), T. Eirich (IBM), T. Kramp (IBM), O.Hersent (Actility)
 
-**Version**: V1.0  
-**Date**: 2015 January  
-**Status:** Released
+**Version**: V1.0.1  
+**Date**: 2016 Feb  
+**Status:** Final
 
 > **Important note:** This is a candidate specification for the LoRa™ Alliance protocol named LoRaWAN™.
 
@@ -53,7 +53,7 @@ End-devices may transmit on any channel available at any time, using any availab
 
 - The end-device respects the maximum transmit duration (or dwell time) relative to the sub-band used and local regulations.
 
-> **Note:** Maximum transmit duty-cycle and dwell time per sub-band are region specific and are defined in the Chapter 6.
+> **Note:** Maximum transmit duty-cycle and dwell time per sub-band are region specific and are defined in the Chapter 7.
 
 <a name="fn1">1</a>: Gateways are also known as **concentrators** or **base stations**.  
 <a name="fn2">2</a>: End-devices are also known as **motes**.  
@@ -77,7 +77,9 @@ In this document,
 
 - The octet order for all multi-octet fields is little endian and
 
-- EUI are 64 bits integers and are transmitted as little endian.
+- EUI are 8 bytes multi-octet fields and are transmitted as little endian.
+
+- By default RU bits are set to zero
 
 # 2 Introduction on LoRaWAN options 
 
