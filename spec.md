@@ -234,9 +234,7 @@ The maximum length (*M*) of the **MACPayload** field is region specific and is s
 |----------------| -------| ------| -------|
 |**MHDR bits**  | MType  | RFU   | Major|
 
-The MAC header specifies the message type (**MType**) and according
-to which major version (**Major**) of the frame format of the LoRaWAN
-layer specification the frame has been encoded.
+The MAC header specifies the message type (**MType**) and according to which major version (**Major**) of the frame format of the LoRaWAN layer specification the frame has been encoded.
 
 ### 4.2.1 Message type (MType bit field) 
 
