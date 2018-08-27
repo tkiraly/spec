@@ -225,7 +225,7 @@ All LoRa uplink and downlink messages carry a PHY payload (**Payload**) starting
 |  -------------------| ------| ------------| -----|
 |  **PHYPayload**    | MHDR  | MACPayload  | MIC|
 
-The maximum length (*M*) of the **MACPayload** field is region specific and is specified in 19 Chapter 6.
+The maximum length (*M*) of the **MACPayload** field is region specific and is specified in Chapter 6.
 
 ## 4.2 MAC Header (MHDR field) 
 
@@ -235,8 +235,8 @@ The maximum length (*M*) of the **MACPayload** field is region specific and is s
 |**MHDR bits**  | MType  | RFU   | Major|
 
 The MAC header specifies the message type (**MType**) and according
-to which major version 24 (**Major**) of the frame format of the LoRaWAN
-layer specification the frame has been 25 encoded.
+to which major version (**Major**) of the frame format of the LoRaWAN
+layer specification the frame has been encoded.
 
 ### 4.2.1 Message type (MType bit field) 
 
