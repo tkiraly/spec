@@ -148,7 +148,7 @@ Downlink messages use the radio packet explicit mode in which the LoRa physical 
 
 ## 3.3 Receive Windows 
 
-Following each uplink transmission the end-device opens two short receive windows. The receive window start times is a configured periods are the end of the transmission of the last uplink bit.
+Following each uplink transmission the end-device opens two short receive windows. The receive window start times are defined using the end of the transmission as a reference.
 
 ![](figure02.png)
 
@@ -156,7 +156,7 @@ Following each uplink transmission the end-device opens two short receive window
 
 ### 3.3.1 First receive window channel, data rate, and start 
 
-The first receive window RX1 uses the same frequency channel as the uplink and a data rate that is a function of the data rate used for the uplink. RX1 opens RECEIVE\_DELAY1<sup>[1](#fn7)</sup> seconds (+/- 20 microseconds) after the end of the uplink modulation. The relationship between uplink and RX1 slot downlink data rate is region specific and detailed in the Section 7. By default the first receive window datarate is identical to the datarate of the last uplink.
+The first receive window RX1 uses a frequency that is a function of the uplink frequency and a data rate that is a function of the data rate used for the uplink. RX1 opens RECEIVE\_DELAY1<sup>[1](#fn7)</sup> seconds (+/- 20 microseconds) after the end of the uplink modulation. The relationship between uplink and RX1 slot downlink data rate is region specific and detailed in the Section 7. By default the first receive window datarate is identical to the datarate of the last uplink.
 
 
 
@@ -198,6 +198,8 @@ All LoRa uplink and downlink messages carry a PHY payload (**Payload**) starting
 *PHYPayload:*  
 |MHDR |  MACPayload |  MIC|
 |------| ------------ |-----|
+|MHDR |  Join-Request |  MIC|
+|MHDR |  Join-Response |  MIC|
 
 **Figure 6: PHY payload structure**
 
