@@ -400,7 +400,7 @@ The fields encrypted are:
 
 *pld* = **FRMPayload**
 
-For each data message, the algorithm defines a sequence of Blocks *A<sub>i</sub>* for *i* = 1..*k* with *k* = 37 ceil(len(*pld*) / 16):
+For each data message, the algorithm defines a sequence of Blocks *A<sub>i</sub>* for *i* = 1..*k* with *k* = ceil(len(*pld*) / 16):
 
 |**Size (bytes)**|1|4|1|4|4|1|1|
 |---|---|---|---|---|---|---|---|
