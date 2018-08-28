@@ -859,7 +859,7 @@ In Europe, radio spectrum allocation is the ISM band is defined by ETSI \[EN300.
 The network channels can be freely attributed by the network operator. However the three  following default channels must be implemented in every EU868MHz end-device. Those  channels are the minimum set that all network gateways should always be listening on.
 
 |**Modulation**|**Bandwidth [kHz]**|**Channel Frequency [MHz]**|**FSK Bitrate or LoRa DR / Bitrate**|**Nb Channels**|**Duty cycle**|
-|---|---|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|
 |LoRa|125|868.10<br/>868.30<br/>868.50<br/>|DR0 to DR5 / 0.3-5 kbps|3|<1%|
 
 **Table 12: EU863-870 default channels**
@@ -987,7 +987,7 @@ If the end-device will never operate with a repeater then the maximum applicatio
 The RX1 receive window uses the same channel than the preceding uplink. The data rate is  a function of the uplink data rate and the RX1DROffset as given by the following table. The allowed values for RX1DROffset are in the \[0:5\] range. Values in the\[6:7\] range are 10 reserved for future use.
 
 |**RX1DROffset**|**0**|**1**|**2**|**3**|**4**|**5**|
-|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|
 |**Upstream data rate**|**Downstream data rate in RX1 slot**|**Downstream data rate in RX1 slot**|**Downstream data rate in RX1 slot**|**Downstream data rate in RX1 slot**|**Downstream data rate in RX1 slot**|**Downstream data rate in RX1 slot**|
 |DR0|DR0|DR0|DR0|DR0|DR0|DR0|
 |DR1|DR1|DR0|DR0|DR0|DR0|DR0|
@@ -1226,7 +1226,7 @@ The first three channels correspond to 779.5, 779.7 and 779.9 MHz with DR0 to DR
 The following table gives the list of frequencies that should be used by end-devices to broadcast the JoinReq message. The JoinReq message transmit duty-cycle should never exceed 0.1%
 
 |**Modulation**|**Bandwidth [kHz]**|**Channel Frequency [MHz]**|**FSK Bitrate or LoRa DR / Bitrate**|**Nb Channels**|**Duty cycle**|
-|---|---|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|
 |LoRa|125|779.5<br/>779.7<br/>779.9<br/>780.5<br/>780.7<br/>780.9<br/>|DR0 to DR5 / 0.3-5 kbps|6|<0.1%|
 
 **Table 24: CN780 JoinReq Channel List**
@@ -1327,7 +1327,7 @@ If the end-device will never operate with a repeater then the maximum applicatio
 The RX1 receive window uses the same channel than the preceding uplink. The data rate is a function of the uplink data rate and the RX1DROffset as given by the following table. The  allowed values for RX1DROffset are in the \[0:5\] range. Values in the range \[6:7\] are  reserved for future use.
 
 |**RX1DROffset**|**0**|**1**|**2**|**3**|**4**|**5**|
-|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|
 |**Upstream data rate**|**Downstream data rate in RX1 slot**|**Downstream data rate in RX1 slot**|**Downstream data rate in RX1 slot**|**Downstream data rate in RX1 slot**|**Downstream data rate in RX1 slot**|**Downstream data rate in RX1 slot**|
 |DR0|DR0|DR0|DR0|DR0|DR0|DR0|
 |DR1|DR1|DR0|DR0|DR0|DR0|DR0|
@@ -1388,7 +1388,7 @@ The first three channels correspond to 433.175, 433.375 and 433.575 MHz with DR0
 The following table gives the list of frequencies that should be used by end-devices to broadcast the JoinReq message. The JoinReq message transmit duty-cycle should never exceed 0.1%
 
 |**Modulation**|**Bandwidth [kHz]**|**Channel Frequency [MHz]**|**FSK Bitrate or LoRa DR / Bitrate**|**Nb Channels**|**Duty cycle**|
-|---|---|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|
 |LoRa|125|433.175<br/>433.375<br/>433.575<br/>|DR0 to DR5 / 0.3-5 kbps|3|<1%|
 **Table 30: EU433 JoinReq Channel List**
 
@@ -1491,7 +1491,7 @@ If the end-device will never operate with a repeater then the maximum applicatio
 The RX1 receive window uses the same channel than the preceding uplink. The data rate is a function of the uplink data rate and the RX1DROffset as given by the following table. The  allowed values for RX1DROffset are in the \[0:5\] range. Values in the range \[6:7\] are  reserved for future use.
 
 |**RX1DROffset**|**0**|**1**|**2**|**3**|**4**|**5**|
-|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|
 |**Upstream data rate**|**Downstream data rate in RX1 slot**|**Downstream data rate in RX1 slot**|**Downstream data rate in RX1 slot**|**Downstream data rate in RX1 slot**|**Downstream data rate in RX1 slot**|**Downstream data rate in RX1 slot**|
 |DR0|DR0|DR0|DR0|DR0|DR0|DR0|
 |DR1|DR1|DR0|DR0|DR0|DR0|DR0|
