@@ -1133,7 +1133,7 @@ The maximum **MACPayload** size length (*M*) is given by the following table. It
 |13|230|222|
 |14:15|Not defined|Not defined|
 
-**Table 20: US902-928 maximum payload size (repeater compatible)**
+**Table 22: US902-928 maximum payload size (repeater compatible)**
 
 The greyed lines correspond to the data rates that may be used by an end-device behind a  repeater.
 
@@ -1143,7 +1143,7 @@ If the end-device will never operate under a repeater then the maximum applicati
 |---|---|---|
 |0|19|11|
 |1|61|53|
-|2|137|129|
+|2|134|126|
 |3|250|242|
 |4|250|242|
 |5:7|Not defined|Not defined|
@@ -1155,13 +1155,13 @@ If the end-device will never operate under a repeater then the maximum applicati
 |13|250|242|
 |14:15|Not defined|Not defined|
 
-**Table 21 : US902-928 maximum payload size (not repeater compatible)**
+**Table 23 : US902-928 maximum payload size (not repeater compatible)**
 
 #### 7.2.7 US902-928 Receive windows
 
 - The RX1 receive channel is a function of the upstream channel used to initiate the data exchange. The RX1 receive channel can be    determined as follows.
   - RX1 Channel Number = Transmit Channel Number modulo 8|
-- The RX1 window data rate depends on the transmit data rate (see    Table 22 below).
+- The RX1 window data rate depends on the transmit data rate (see    Table 24 below).
 - The RX2 (second receive window) settings uses a fixed data rate and    frequency. Default parameters are 923.3Mhz / DR8
 
 |**Upstream data rate**|**Downstream data rate**|**Downstream data rate**|**Downstream data rate**|**Downstream data rate**|
@@ -1179,7 +1179,7 @@ If the end-device will never operate under a repeater then the maximum applicati
 |DR12|DR12|DR11|DR10|DR9|
 |DR13|DR13|DR12|DR11|DR10|
 
-**Table 22: Data rate mapping**
+**Table 24: Data rate mapping**
 
 The allowed values for RX1DROffset are in the \[0:3\] range. Values in the range \[4:7\] are reserved for future use.
 
@@ -1211,7 +1211,7 @@ The following synchronization words should be used :
 |**LORA**|0x34|8 symbols|
 |**GFSK**|0xC194C1|5 bytes|
 
-**Table 23: CN779-787 synch words**
+**Table 25: CN779-787 synch words**
 
 ##### 7.3.2 CN779-787 ISM Band channel frequencies
 
@@ -1228,17 +1228,17 @@ CN780Mhz end-devices should be capable of operating in the 779 to 787 MHz freque
 
 The first three channels correspond to 779.5, 779.7 and 779.9 MHz with DR0 to DR5 and must be implemented in every end-device. Those default channels cannot be modified through the ***NewChannelReq*** command and guarantee a minimal common channel set between end-devices and gateways of all networks. Other channels can be freely distributed across the allowed frequency range on a network per network basis.
 
-The following table gives the list of frequencies that should be used by end-devices to broadcast the JoinReq message. The JoinReq message transmit duty-cycle should never exceed 0.1%
+The following table gives the list of frequencies that should be used by end-devices to broadcast the JoinReq message. The JoinReq message transmit duty-cycle shall follow the rules described in chapter 8
 
 |**Modulation**|**Bandwidth [kHz]**|**Channel Frequency [MHz]**|**FSK Bitrate or LoRa DR / Bitrate**|**Nb Channels**|**Duty cycle**|
 |---|---|---|---|---|---|
 |LoRa|125|779.5<br/>779.7<br/>779.9<br/>780.5<br/>780.7<br/>780.9<br/>|DR0 to DR5 / 0.3-5 kbps|6|<0.1%|
 
-**Table 24: CN780 JoinReq Channel List**
+**Table 26: CN780 JoinReq Channel List**
 
-#### 7.3.3 CN779-787 Data Rate and End-point Output Power encoding
+#### 7.3.3 CN779-787 Data Rate and End-device Output Power encoding
 
-The following encoding is used for Data Rate (DR) and End-point Output Power (TXPower)  in the CN780 band:
+The following encoding is used for Data Rate (DR) and End-device Output Power (TXPower)  in the CN780 band:
 
 |**DataRate**|**Configuration**|**Indicative physical bit rate [bit/s]**|
 |---|---|---|
@@ -1262,7 +1262,7 @@ The following encoding is used for Data Rate (DR) and End-point Output Power (TX
 |5|-5 dBm|
 |6..15|RFU|
 
-**Table 25: Data rate and TX power table**
+**Table 27: Data rate and TX power table**
 
 #### 7.3.4 CN779-787 JoinAccept CFList
 
@@ -1270,7 +1270,7 @@ The CN780 ISM band LoRaWAN implements an optional **channel frequency list** (CF
 
 |**Size (bytes)**|3|3|3|3|3|1|
 |---|---|---|---|---|---|---|
-|**CFList**|Freq Ch4|Freq Ch5|Freq Ch6|Freq CN7|Freq Ch8|RFU|
+|**CFList**|Freq Ch4|Freq Ch5|Freq Ch6|Freq Ch7|Freq Ch8|RFU|
 
 The actual channel frequency in Hz is 100 x frequency whereby values representing frequencies below 100 Mhz are reserved for future use. This allows setting the frequency of a channel anywhere between 100 MHz to 1.67 GHz in 100 Hz steps. Unused channels have a frequency value of 0. The **CFList** is optional and its presence can be detected by the length of the join-accept message. If present, the **CFList** replaces all the previous channels stored in the end-device apart from the three default channels as defined in Chapter 6.
 
@@ -1290,7 +1290,7 @@ The CN780 LoRaWAN only supports a maximum of 16 channels. When **ChMaskCntl** fi
 |6|All channels ON The device should enable all currently defined channels independently of the ChMask field value.|
 |7|RFU|
 
-**Table 26: ChMaskCntl value table**
+**Table 28: ChMaskCntl value table**
 
 If the ChMask field value is one of values meaning RFU, then end-device should reject the command and unset the "**Channel mask ACK**" bit in its response.
 
@@ -1310,7 +1310,7 @@ The maximum **MACPayload** size length (*M*) is given by the following table. It
 |7|230|222  |
 |8:15|Not defined|Not defined|
 
-**16 Table 27: CN780 maximum payload size**
+**Table 29: CN780 maximum payload size**
 
 If the end-device will never operate with a repeater then the maximum application payload  length in the absence of the optional **FOpt** control field should be:
 
@@ -1325,7 +1325,7 @@ If the end-device will never operate with a repeater then the maximum applicatio
 |6|250|242|
 |7|250|242|
 |8:15|Not defined|Not defined|
-**Table 28 : CN780 maximum payload size (not repeater compatible)**
+**Table 30 : CN780 maximum payload size (not repeater compatible)**
 
 #### 7.3.7 CN779-787 Receive windows
 
@@ -1373,7 +1373,7 @@ The following synchronization words should be used :
 |**LORA**|0x34|8 symbols|
 |**GFSK**|0xC194C1|5 bytes|
 
-**Table 29: EU433 synch words**
+**Table 31: EU433 synch words**
 
 #### 7.4.2 EU433 ISM Band channel frequencies
 
