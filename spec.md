@@ -1103,8 +1103,8 @@ For the US902-928 version the **ChMaskCntl** field of the ***LinkADRReq*** comma
 |..|..|
 |4|Channels 64 to 71|
 |5|RFU|
-|6|All 125 kHz ONChMask applies tochannels 65 to 72|
-|7|All 125 kHz OFFChMask applies tochannels 65 to 72|
+|6|All 125 kHz ON ChMask applies to channels 65 to 72|
+|7|All 125 kHz OFF ChMask applies to channels 65 to 72|
 
 **Table 19: ChMaskCntl value table**
 
