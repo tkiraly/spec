@@ -192,20 +192,11 @@ All LoRa uplink and downlink messages carry a PHY payload (**Payload**) starting
 |Preamble|PHDR|PHDR\_CRC|PHYPayload|CRC\*|
 |---|---|---|---|---|
 
-<<<<<<< HEAD
 *PHYPayload:*  
 |MHDR |  MACPayload |  MIC|
 |------| ------------ |-----|
 |MHDR |  Join-Request |  MIC|
 |MHDR |  Join-Response |  MIC|
-=======
-**Figure 5: Radio PHY structure (CRC\* is only available on uplink messages)**
-
-*PHYPayload:*
-
-|MHDR|MACPayload|MIC|
-|---|---|---|
->>>>>>> LoRaWAN-V1.0
 
 **Figure 6: PHY payload structure**
 
