@@ -662,6 +662,12 @@ The newly defined channel is enabled and can immediately be used for communicati
 
 The end-device acknowledges the reception of a ***NewChannelReq*** by sending back a ***NewChannelAns*** command. The payload of this message contains the following information:
 
+|**Size (bytes)**|1|
+|---|---|
+|**NewChannelAns Payload**|Status|
+
+The status (**Status**) bits have the following meaning:
+
 |**Bits**|7:2|1|0|
 |---|---|---|---|
 |**Status**|RFU|Data rate range ok|Channel frequency ok|
@@ -702,7 +708,7 @@ The delay is expressed in seconds. **Del** 0 is mapped on 1 s.
 
 **Table 10: Del mapping table**
 
-An end device answers ***RXTimingSetupReq*** with ***RXTimingSetupAns*** with no payload.
+An end device answers ***RXTimingSetupReq*** with ***RXTimingSetupAns*** with no payload. The ***RXTimingSetupAns*** command should be added in the FOpt field of all uplinks until a class A downlink is received by the end-device. This guarantees that even in presence of uplink packet loss, the network is always aware of the downlink parameters used by the end-device.
 
 ## 6 End-Device Activation
 
@@ -736,7 +742,7 @@ The **NwkSKey** is a **network session key** specific for the end-device. It is 
 
 #### 6.1.4 Application session key (AppSKey)
 
-The **AppSKey** is an **application session key** specific for the end-device. It is used by both  the network server and the end-device to encrypt and decrypt the payload field of  application-specific data messages. It is also used to calculate and verify an application level **MIC** that may be included in the payload of application-specific data messages.
+The **AppSKey** is an **application session key** specific for the end-device. It is used by both  the application server and the end-device to encrypt and decrypt the payload field of  application-specific data messages. It is also used to calculate and verify an application-level **MIC** that may be included in the payload of application-specific data messages.
 
 ### 6.2 Over-the-Air Activation
 
@@ -782,6 +788,8 @@ MIC = *cmac*\[0..3\]
 
 The join-request message is not encrypted.
 
+The join-request message can be transmitted using any data rate and following a random frequency hopping sequence across the specified join channels. It is recommended to use a plurality of data rates. The intervals between transmissions of Join-Requests shall respect the condition described in chapter 8.
+
 <a name="fn11">1</a>: Since all end-devices end up with unrelated application keys specific for each end-device, extracting the AppKey from an end-device only compromises this one end-device.  
 <a name="fn12">2</a>: The DevNonce can be extracted by issuing a sequence of RSSI measurements under the assumption that the quality of randomness fulfills the criteria of true randomness
 
@@ -789,29 +797,29 @@ The join-request message is not encrypted.
 
 The network server will respond to the **join-request** message with a **join-accept** message if the end-device is permitted to join a network. The join-accept message is sent like a normal  downlink but uses delays JOIN\_ACCEPT\_DELAY1 or JOIN\_ACCEPT\_DELAY2 (instead of RECEIVE\_DELAY1 and RECEIVE\_DELAY2, respectively). The channel frequency and data rate used for these two receive windows are identical to the one used for the RX1 and RX2  receive windows described in the "receive windows" section of the "Physical Layer" chapter  No response is given to the end-device if the join request is not accepted.
 
-The join-accept message contains an application nonce (**AppNonce**) of 3 octets, a network  identifier (**NetID**), an end-device address (**DevAddr**), a delay between TX and RX  (**RxDelay**) and an optional list of channel frequencies (**CFList**) for the network the end device is joining. The CFList option is region specific and is defined in Section 7.
+The join-accept message contains an application nonce (**AppNonce**) of 3 octets, a network  identifier (**NetID**), an end-device address (**DevAddr**), a delay between TX and RX  (**RxDelay**) and an optional list of channel frequencies (**CFList**) for the network the end-device is joining. The CFList option is region specific and is defined in Section 7.
 
 |**Size (bytes)**|3|3|4|1|1|\(16) Optional|
 |---|---|---|---|---|---|---|
 |**Join Accept**|AppNonce|NetID|DevAddr|DLSettings|RxDelay|CFList|
 
-The **AppNonce** is a random value or some form of unique ID provided by the network server  and used by the end-device to derive the two session keys **NwkSKey** and **AppSKey** as  follows:<sup>[3](#fn14)</sup>
+The **AppNonce** is a random value or some form of unique ID provided by the network server  and used by the end-device to derive the two session keys **NwkSKey** and **AppSKey** as  follows:<sup>[2](#fn14)</sup>
 
 NwkSKey = aes128\_encrypt(AppKey, 0x01 \|AppNonce \|NetID \| DevNonce \|pad<sub>16</sub>)
 
 AppSKey = aes128\_encrypt(AppKey, 0x02 \|AppNonce \|NetID \| DevNonce \|pad<sub>16</sub>)
 
-The MIC value for a join-accept message is calculated as follows:<sup>[4](#fn15)</sup>
+The MIC value for a join-accept message is calculated as follows:<sup>[3](#fn15)</sup>
 
-*cmac* = aes128\_cmac(AppKey, MHDR \|AppNonce \|NetID \|DevAddr \|RFU \|RxDelay \|CFList)     MIC = *cmac*\[0..3\]
+*cmac* = aes128\_cmac(AppKey, MHDR \|AppNonce \|NetID \|DevAddr \|DLSettings \|CFList)     MIC = *cmac*\[0..3\]
 
 The join-accept message itself is encrypted with the **AppKey** as follows:
 
-aes128\_decrypt(AppKey, AppNonce \|NetID \|DevAddr \|RFU \| RxDelay \|CFList \|MIC)
+aes128\_decrypt(AppKey, AppNonce \|NetID \|DevAddr \|DLSettings \|CFList \|MIC)
 
 > **Note:** The network server uses an AES decrypt operation in ECB mode to encrypt the join-accept message so that the end-device can use an AES encrypt operation to decrypt the message. This way an end-device only has to implement AES encrypt but not AES decrypt.
 
-> **Note:** Establishing these two session keys allows for a federated network server infrastructure in which network operators are not able  to eavesdrop on application data. In such a setting, the application provider must support the network operator in the process of an end device actually joining the network and establishing the NwkSKey for the end-device. At the same time the application provider commits to the network operator that it will take the charges for any traffic incurred by the end-device and retains full control over the AppSKey used for protecting its application data.
+> **Note:** Establishing these two session keys allows for a federated network server infrastructure in which network operators are not able  to eavesdrop on application data. In such a setting, the application provider must support the network operator in the process of an end-device actually joining the network and establishing the NwkSKey for the end-device. At the same time the application provider commits to the network operator that it will take the charges for any traffic incurred by the end-device and retains full control over the AppSKey used for protecting its application data.
 
 The format of the **NetID** is as follows: The seven LSB of the **NetID** are called **NwkID** and  match the seven MSB of the short address of an end-device as described before.  Neighboring or overlapping networks must have different **NwkID**s. The remaining 17 MSB  can be freely chosen by the network operator.
 
@@ -828,8 +836,8 @@ The actual relationship between the uplink and downlink data rate is region spec
 The delay **RxDelay** follows the same convention as the **Delay** field in the ***RXTimingSetupReq*** command.
 
 <a name="fn13">1</a>: [RFC4493]  
-<a name="fn14">3</a>: The pad<sub>16</sub> function appends zero octets so that the length of the data is a multiple of 16.  
-<a name="fn15">4</a>: [RFC4493]
+<a name="fn14">2</a>: The pad<sub>16</sub> function appends zero octets so that the length of the data is a multiple of 16.  
+<a name="fn15">3</a>: [RFC4493]
 
 ### 6.3 Activation by Personalization
 
@@ -856,7 +864,7 @@ The following synchronization words should be used:
 
 #### 7.1.2 EU863-870 ISM Band channel frequencies
 
-In Europe, radio spectrum allocation is the ISM band is defined by ETSI \[EN300.220\].
+This section applies to any region where the ISM radio spectrum use is defined by the ETSI \[EN300.220\] standard.
 
 The network channels can be freely attributed by the network operator. However the three  following default channels must be implemented in every EU868MHz end-device. Those  channels are the minimum set that all network gateways should always be listening on.
 
@@ -866,15 +874,7 @@ The network channels can be freely attributed by the network operator. However t
 
 **Table 12: EU863-870 default channels**
 
-In order to access the physical medium the ETSI regulations impose some restrictions such  maximum time the transmitter can be on or the maximum time a transmitter can transmit per hour. The ETSI regulations allow the choice of using either a duty-cycle limitation or a so called **Listen Before Talk Adaptive Frequency  gility** (LBT AFA) transmissions  management. The current LoRaWAN specification exclusively uses duty-cycled limited  transmissions to comply with the ETSI regulations.
-
-The LoRaWAN enforces a per sub-band duty-cycle limitation. Each time a frame is  transmitted in a given sub-band, the time of emission and the on-air duration of the frame  are recorded for this sub-band. The same sub-band cannot be used again during the next  *Toff* seconds where:
-
-Toff<sub>subband</sub> = TimeOnAir / DutyCycle<sub>subband</sub> - TimeOnAir
-
-During the unavailable time of a given sub-band, the device may still be able to transmit on  another sub-band. If all sub-bands are unavailable, the device has to wait before any further  transmission. The device adapts its channel hoping sequence according to the sub-band availability.
-
-Example: A device just transmitted a 0.5 s long frame on one default channel. This channel  is in a sub-band allowing 1% duty-cycle. Therefore this whole sub-band (868 -- 868.6) will be  unavailable for 49.5 s.
+In order to access the physical medium the ETSI regulations impose some restrictions such  maximum time the transmitter can be on or the maximum time a transmitter can transmit per hour. The ETSI regulations allow the choice of using either a duty-cycle limitation or a so-called **Listen Before Talk Adaptive Frequency  gility** (LBT AFA) transmissions  management. The current LoRaWAN specification exclusively uses duty-cycled limited  transmissions to comply with the ETSI regulations.
 
 EU868MHz ISM band end-devices should use the following default parameters
 
@@ -884,11 +884,11 @@ EU868Mhz end-devices should be capable of operating in the 863 to 870 MHz freque
 
 The first three channels correspond to 868.1, 868.3, and 868.5 MHz / DR0 to DR5 and must be implemented in every end-device. Those default channels cannot be modified through the ***NewChannelReq*** command and guarantee a minimal common channel set between end-devices and network gateways.
 
-The following table gives the list of frequencies that should be used by end-devices to broadcast the JoinReq message. The JoinReq message transmit duty-cycle should never exceed 0.1%
+The following table gives the list of frequencies that should be used by end-devices to broadcast the JoinReq message. The JoinReq message transmit duty-cycle shall follow the rules described in chapter 8
 
 |**Modulation**|**Bandwidth [kHz]**|**Channel Frequency [MHz]**|**FSK Bitrate or LoRa DR / Bitrate**|**Nb Channels**|**Duty cycle**|
 |---|---|---|---|---|---|
-|LoRa|125|864.10<br/>864.30<br/>864.50<br/>868.10<br/>868.30<br/>868.50<br/>|DR0 to DR5 / 0.3-5 kbps|6|<0.1%|
+|LoRa|125|868.10<br/>868.30<br/>868.50<br/>|DR0 to DR5 / 0.3-5 kbps|6|<0.1%|
 
 **Table 13: EU863-870 JoinReq Channel List**
 
@@ -907,6 +907,7 @@ The following encoding is used for Data Rate (DR) and End-point Output Power (TX
 |6|LoRa: SF7 / 250kHz|10000|
 |7|LoRa: FSK: 50 kbps|50000|
 |8..15|RFU|
+**Table 14: TX data rate table**
 
 |**TXPower**|**Configuration**|
 |---|---|
@@ -917,7 +918,7 @@ The following encoding is used for Data Rate (DR) and End-point Output Power (TX
 |4|5dBm|
 |5|2dBm|
 |6..15|RFU|
-**Table 14: Data rate and TX power table**
+**Table 15: TX power table**
 
 #### 7.1.4 EU863-870 JoinAccept CFList
 
@@ -927,11 +928,11 @@ In this case the CFList is a list of five channel frequencies for the channels f
 
 |**Size (bytes)**|3|3|3|3|3|1|
 |---|---|---|---|---|---|---|
-|**CFList**|Freq Ch4|Freq Ch5|Freq Ch6|Freq CN7|Freq Ch8|RFU|
+|**CFList**|Freq Ch4|Freq Ch5|Freq Ch6|Freq Ch7|Freq Ch8|RFU|
 
 The actual channel frequency in Hz is 100 x frequency whereby values representing  frequencies below 100 Mhz are reserved for future use. This allows setting the frequency of  a channel anywhere between 100 MHz to 1.67 GHz in 100 Hz steps. Unused channels have
 
-a frequency value of 0. The **CFList** is optional and its presence can be detected by the length of the join-accept message. If present, the **CFList** replaces all the previous channels  stored in the end-device apart from the three default channels as defined in Chapter 6. The  newly defined channels are immediately enabled and usable by the end-device for  communication.
+a frequency value of 0. The **CFList** is optional and its presence can be detected by the length of the join-accept message. If present, the **CFList** replaces all the previous channels  stored in the end-device apart from the three default channels as defined in Chapter 7. The  newly defined channels are immediately enabled and usable by the end-device for  communication.
 
 #### 7.1.5 EU863-870 LinkAdrReq command
 
@@ -947,9 +948,9 @@ The EU863-870 LoRaWAN only supports a maximum of 16 channels. When **ChMaskCntl*
 |6|All channels ON The device should enable all currently defined channels independently of the ChMask field value.|
 |7|RFU|
 
-**Table 15: ChMaskCntl value table**
+**Table 16: ChMaskCntl value table**
 
-If the ChMask field value is one of values meaning RFU, the end-device should reject the  command and unset the "**Channel mask ACK**" bit in its response.
+If the ChMaskCntl field value is one of values meaning RFU, the end-device should reject the  command and unset the "**Channel mask ACK**" bit in its response.
 
 #### 7.1.6 EU863-870 Maximum payload size
 
@@ -966,7 +967,7 @@ The maximum **MACPayload** size length (*M)* is given by the following table. It
 |6|230|222  |
 |7|230|222  |
 |8:15|Not defined|Not defined|
-**Table 16: EU863-870 maximum payload size**
+**Table 17: EU863-870 maximum payload size**
 
 If the end-device will never operate with a repeater then the maximum application payload  length in the absence of the optional **FOpt** control field should be:
 
@@ -982,7 +983,7 @@ If the end-device will never operate with a repeater then the maximum applicatio
 |7|250|242|
 |8:15|Not defined|Not defined|
 
-**Table 17 : EU863-870 maximum payload size (not repeater compatible)**
+**Table 18 : EU863-870 maximum payload size (not repeater compatible)**
 
 #### 7.1.7 EU863-870 Receive windows
 
@@ -1053,7 +1054,9 @@ The 915 MHz ISM Band shall be divided into the following channel plans.
 
 US902-928 end-devices should be capable of operating in the 902 to 928 MHz frequency  band and should feature a channel data structure to store the parameters of 72 channels. A  channel data structure corresponds to a frequency and a set of data rates usable on this  frequency.
 
-If using the over-the-air activation procedure, the end-device should broadcast the JoinReq  message alternatively on a random 125 kHz channel amongst the 64 channels defined using  **DR0** and a random 500 kHz channel amongst the 8 channels defined using **DR4**. The end device should change channel for every transmission.
+If using the over-the-air activation procedure, the end-device should broadcast the JoinReq  message alternatively on a random 125 kHz channel amongst the 64 channels defined using  **DR0** and a random 500 kHz channel amongst the 8 channels defined using **DR4**. The end-device should change channel for every transmission.
+
+Personalized devices shall have all 72 channels enabled following a reset.
 
 #### 7.2.3 US902-928 Data Rate and End-point Output Power encoding
 
@@ -1074,6 +1077,7 @@ The following encoding is used for Data Rate (**DR**) and End-point Output Power
 |12|LoRa: SF8 / 500kHz|12500|
 |13|LoRa: SF7 / 500kHz|21900|
 |14:15|RFU|
+**Table 19 TX Data rate table**
 
 |**TXPower**|**Configuration**|
 |---|---|
@@ -1083,12 +1087,11 @@ The following encoding is used for Data Rate (**DR**) and End-point Output Power
 |3:9|...|
 |10|10dBm|
 |11:16|RFU|
+**Table 20: TX power table**
 
-**Table 18: Data rate and TX power table (Rem: DR4 is identical to DR12, DR8..13 must be implemented in end-devices and are reserved for future applications)**
+#### 7.2.4 US902-928 JoinAccept CFList
 
-#### 7.2.4 US902-928 JoinResp CFList
-
-The US902-928 LoRaWAN does not support the use of the optional **CFlist** appended to the  JoinResp message. If the **CFlist** is not empty it is ignored by the end-device.
+The US902-928 LoRaWAN does not support the use of the optional **CFlist** appended to the  JoinAccept message. If the **CFlist** is not empty it is ignored by the end-device.
 
 #### 7.2.5 US902-928 LinkAdrReq command
 
@@ -1101,14 +1104,14 @@ For the US902-928 version the **ChMaskCntl** field of the ***LinkADRReq*** comma
 |..|..|
 |4|Channels 64 to 71|
 |5|RFU|
-|6|All 125 kHz ONChMask applies tochannels 65 to 72|
-|7|All 125 kHz OFFChMask applies tochannels 65 to 72|
+|6|All 125 kHz ON ChMask applies to channels 65 to 72|
+|7|All 125 kHz OFF ChMask applies to channels 65 to 72|
 
-**Table 19: ChMaskCntl value table**
+**Table 21: ChMaskCntl value table**
 
 If **ChMaskCntl** = 6 (resp 7) then 125 kHz channels are enabled (resp disabled).  Simultaneously the channels 64 to 71 are set according to the **ChMask** bit mask.
 
-**Note:** FCC regulation requires hopping over at least 50 channels when  using maximum output power. It is possible to have end-devices with less channels (at least six 125 kHz channels) when limiting the end device transmit power to 21 dBm.
+**Note:** FCC regulation requires hopping over at least 50 channels when  using maximum output power. It is possible to have end-devices with less channels (at least six 125 kHz channels) when limiting the end-device transmit power to 21 dBm.
 
 #### 7.2.6 US902-928 Maximum payload size
 
