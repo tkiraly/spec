@@ -1309,7 +1309,7 @@ The maximum **MACPayload** size length (*M*) is given by the following table. It
 |7|230|222  |
 |8:15|Not defined|Not defined|
 
-**16 Table 27: CN780 maximum payload size**
+**Table 27: CN780 maximum payload size**
 
 If the end-device will never operate with a repeater then the maximum application payload  length in the absence of the optional **FOpt** control field should be:
 
