@@ -428,11 +428,15 @@ If the layers above LoRaWAN provide pre-encrypted FRMPayload to LoRaWAN on selec
 
 The message integrity code (**MIC**) is calculated over all the fields in the message.
 
-*msg* = **MHDR** \|**FHDR** \|**FPort** \|**FRMPayload** whereby len(*msg*) denotes the length of the message in octets.
+*msg* = **MHDR** \|**FHDR** \|**FPort** \|**FRMPayload**
+
+whereby len(*msg*) denotes the length of the message in octets.
 
 The **MIC** is calculated as follows \[RFC4493\]:
 
-*cmac* = aes128\_cmac(**NwkSKey**, *B<sub>0</sub>* \|*msg*)  **MIC** = *cmac*\[0..3\]
+*cmac* = aes128\_cmac(**NwkSKey**, *B<sub>0</sub>* \|*msg*)
+
+**MIC** = *cmac*\[0..3\]
 
 whereby the block *B<sub>0</sub>* is defined as follows:
 
