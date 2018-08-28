@@ -196,18 +196,21 @@ All LoRa uplink and downlink messages carry a PHY payload (**Payload**) starting
 *PHYPayload:*  
 |MHDR |  MACPayload |  MIC|
 |------| ------------ |-----|
+||||
 
 **Figure 6: PHY payload structure**
 
 *MACPayload:*  
 |   FHDR  | FPort  | FRMPayload  |
 |   ------| -------| ------------|
+||||
    
 **Figure 7: MAC payload structure**
 
 *FHDR:*  
 |  DevAddr | FCtrl | FCnt | FOpts |
 |-----------|-------|------|-------|
+||||
 
 **Figure 8: Frame header structure**
 
@@ -300,14 +303,11 @@ For uplink frames the FCtrl content of the frame header is:
 
 LoRa network allows the end-devices to individually use any of the possible data rates. This feature is used by the LoRaWAN to adapt and optimize the data rate of static end-devices. This is referred to as Adaptive Data Rate (ADR) and when this is enabled the network will be optimized to use the fastest data rate possible.
 
-Mobile end-devices should use their fixed default data rate as data rate management is not practical when the moving end-device causes fast c
-hanges in the radio environment.
+Mobile end-devices should use their fixed default data rate as data rate management is not practical when the moving end-device causes fast changes in the radio environment.
 
 If the **ADR** bit is set, the network will control the data rate of the end-device through the appropriate MAC commands. If the **ADR** bit is not set, the network will not attempt to control the data rate of the end-device regardless of the received signal quality. The **ADR** bit may be set and unset by the end-device or the Network on demand. However, whenever possible, the ADR scheme should be enabled to increase the battery life of the end-device and maximize the network capacity.
 
-> **Note:** Even mobile end-devices are actually immobile most of the
-time. So depending on its state of mobility, an end-device can request
-the network to optimize its data rate using ADR.
+> **Note:** Even mobile end-devices are actually immobile most of the time. So depending on its state of mobility, an end-device can request the network to optimize its data rate using ADR.
 
 If an end-device whose data rate is optimized by the network to use a data rate higher than its default data rate, it periodically needs to validate that the network still receives the uplink frames. Each time the uplink frame counter is incremented (for each new uplink, repeated transmissions do not increase the counter), the device increments an ADR\_ACK\_CNT counter. After ADR\_ACK\_LIMIT uplinks (ADR\_ACK\_CNT \>= ADR\_ACK\_LIMIT) without any downlink response, it sets the ADR acknowledgment request bit (**ADRACKReq**). The network is required to respond with a downlink frame within the time set by the ADR\_ACK\_DELAY, any received downlink frame following an uplink frame resets the ADR\_ACK\_CNT counter. The downlink **ACK** bit does not need to be set as any response during the receive slot of the end-device indicates that the gateway has still received the uplinks from this device. If no reply is received within the next ADR\_ACK\_DELAY uplinks (i.e., after a total of ADR\_ACK\_LIMIT + ADR\_ACK\_DELAY), the end-device may try to regain connectivity by switching to the next lower data rate that provides a longer radio range. The end-device will further lower its data rate step by step every time ADR\_ACK\_LIMIT is reached. The **ADRACKReq** shall not be set if the device uses its default data rate because in that case no action can be taken to improve the link range.
 
@@ -319,8 +319,7 @@ If an end-device whose data rate is optimized by the network to use a data rate 
 
 When receiving a *confirmed data* message, the receiver shall respond with a data frame that has the acknowledgment bit (**ACK**) set. If the sender is an end-device, the network will send the acknowledgement using one of the receive windows opened by the end-device after the send operation. If the sender is a gateway, the end-device transmits an acknowledgment at its own discretion.
 
-Acknowledgements are only sent in response to the latest message
-received and are never retransmitted.
+Acknowledgements are only sent in response to the latest message received and are never retransmitted.
 
 > **Note:** To allow the end-devices to be as simple as possible and have as few states as possible it may transmit an explicit (possibly empty) acknowledgement data message immediately after the reception of a data message requiring a confirmation. Alternatively the end-device may defer the transmission of an acknowledgement to piggyback it with its next data message.
 
@@ -328,8 +327,7 @@ received and are never retransmitted.
 
  The number of retransmissions (and their timing) for the same message where an acknowledgment is requested but not received is at the discretion of the end device and may be different for each end-device, it can also be set or adjusted from the network server.
 
- > **Note:** Some example timing diagrams of the acknowledge mechanism
- are given in Chapter 18.
+ > **Note:** Some example timing diagrams of the acknowledge mechanism are given in Chapter 18.
 
  > **Note:** If an end-device has reached its maximum number of retransmissions without receiving an acknowledgment, it can try to regain connectivity by moving to a lower data rate with longer reach. It is up to the end-device to retransmit the message again or to forfeit that message and move on.
 
@@ -340,49 +338,19 @@ received and are never retransmitted.
 
 #### 4.3.1.4 Frame pending bit (FPending in FCtrl, downlink only)
 
- The frame pending bit (**FPending**) is only used in downlink
- communication, indicating that the gateway has more data pending to be
- sent and therefore asking the end-device to open another receive
- window as soon as possible by sending another uplink message.
+ The frame pending bit (**FPending**) is only used in downlink communication, indicating that the gateway has more data pending to be sent and therefore asking the end-device to open another receive window as soon as possible by sending another uplink message.
 
  The exact use of **FPending** bit is described in Chapter 18.3.
 
 #### 4.3.1.5 Frame counter (FCnt)
 
- Each end-device has two frame counters to keep track of the number of
- data frames sent uplink to the network server (FCntUp), incremented by
- the end-device and received by the end-device downlink from the
- network server (FCntDown), which is incremented by the network server.
- The network server tracks the uplink frame counter and generates the
- downlink counter for each end-device. After a join accept, the frame
- counters on the enddevice and the frame counters on the network server
- for that end-device are reset to 0. Subsequently FCntUp and FCntDown
- are incremented at the sender side by 1 for each data frame sent in
- the respective direction. At the receiver side, the corresponding
- counter is kept in sync with the value received provided the value
- received has incremented compared to the current counter value and is
- less than the value specified by MAX\_FCNT\_GAP<sup>[1](#fn10)</sup> after considering
- counter rollovers. If this difference is greater than the value of
- MAX\_FCNY\_GAP then too many data frames have been lost then
- subsequent will be discarded.
+ Each end-device has two frame counters to keep track of the number of data frames sent uplink to the network server (FCntUp), incremented by the end-device and received by the end-device downlink from the network server (FCntDown), which is incremented by the network server. The network server tracks the uplink frame counter and generates the downlink counter for each end-device. After a join accept, the frame counters on the enddevice and the frame counters on the network server for that end-device are reset to 0. Subsequently FCntUp and FCntDown are incremented at the sender side by 1 for each data frame sent in the respective direction. At the receiver side, the corresponding counter is kept in sync with the value received provided the value received has incremented compared to the current counter value and is less than the value specified by MAX\_FCNT\_GAP<sup>[1](#fn10)</sup> after considering counter rollovers. If this difference is greater than the value of MAX\_FCNY\_GAP then too many data frames have been lost then subsequent will be discarded.
 
- The LoRaWAN allows the use of either 16-bits or 32-bits frame
- counters. The network side needs to be informed out-of-band about the
- width of the frame counter implemented in a given end-device. If a
- 16-bits frame counter is used, the **FCnt** field can be used directly
- as the counter value, possibly extended by leading zero octets if
- required. If a 32-bits frame counter is used, the **FCnt** field
- corresponds to the least-significant 16 bits of the 32-bits frame
- counter (i.e., FCntUp for data frames sent uplink and FCntDown for
- data frames sent downlink).
+ The LoRaWAN allows the use of either 16-bits or 32-bits frame counters. The network side needs to be informed out-of-band about the width of the frame counter implemented in a given end-device. If a 16-bits frame counter is used, the **FCnt** field can be used directly as the counter value, possibly extended by leading zero octets if required. If a 32-bits frame counter is used, the **FCnt** field corresponds to the least-significant 16 bits of the 32-bits frame counter (i.e., FCntUp for data frames sent uplink and FCntDown for data frames sent downlink).
 
- The end-device shall not reuse the same FCntUp value, except for
- retransmission, with the same application and network session keys.
+ The end-device shall not reuse the same FCntUp value, except for retransmission, with the same application and network session keys.
 
- > **Note:** Since the **FCnt** field carries only the least-significant
- 16 bits of the 32-bits frame counter, the server must infer the 16
- most-significant bits of the frame counter from the observation of the
- traffic.
+ > **Note:** Since the **FCnt** field carries only the least-significant 16 bits of the 32-bits frame counter, the server must infer the 16 most-significant bits of the frame counter from the observation of the traffic.
  
 <a name="fn10">1</a>: Actual value for MAX_FCNT_GAP, RECEIVE_DELAY1 and RECEIVE_DELAY2 can be found at 7.1.7 for EU863-870 or 7.2.7 for US902-928.
 
@@ -390,35 +358,21 @@ received and are never retransmitted.
 
  The frame-options length field (**FOptsLen**) in **FCtrl** byte denotes the actual length of the frame options field (**FOpts**) included in the frame.
 
- **FOpts** transport MAC commands of a maximum length of 15 octets
- that are piggybacked onto data frames; see Chapter 4.4 for a list of
- valid MAC commands.
+ **FOpts** transport MAC commands of a maximum length of 15 octets that are piggybacked onto data frames; see Chapter 4.4 for a list of valid MAC commands.
 
-  If **FOptsLen** is 0, the **FOpts** field is absent. If **FOptsLen**
- is different from 0, i.e. if MAC commands are present in the
- **FOpts** field, the port 0 cannot be used (**FPort** must be either
- not present or different from 0).
+  If **FOptsLen** is 0, the **FOpts** field is absent. If **FOptsLen** is different from 0, i.e. if MAC commands are present in the **FOpts** field, the port 0 cannot be used (**FPort** must be either not present or different from 0).
 
-  MAC commands cannot be simultaneously present in the payload field
- and the frame options field.
+  MAC commands cannot be simultaneously present in the payload field and the frame options field.
 
 ### 4.3.2 Port field (FPort) 
 
-If the frame payload field is not empty, the port field must be
-    present. If present, an **FPort**
-value of 0 indicates that the **FRMPayload** contains MAC commands
-    only; see Chapter 4.4
-for a list of valid MAC commands. **FPort** values 1..223
-    (0x01..0xDF) are application specific. **FPort** values 224..255
-    (0xE0..0xFF) are reserved for future standardized application
-    extensions.
+If the frame payload field is not empty, the port field must be present. If present, an **FPort** value of 0 indicates that the **FRMPayload** contains MAC commands only; see Chapter 4.4 for a list of valid MAC commands. **FPort** values 1..223 (0x01..0xDF) are application specific. **FPort** values 224..255 (0xE0..0xFF) are reserved for future standardized application extensions.
 
 |  **Size (bytes)**  | 7..23  | 0..1    |0..*N*|
 |  -------------------| -------| ------- |------------|
 |  **MACPayload**    | FHDR   | FPort   |FRMPayload|
 
- *N* is the number of octets of the application payload. The valid
-range for *N* is region specific and is defined in Section 7
+ *N* is the number of octets of the application payload. The valid range for *N* is region specific and is defined in Section 7
 
  *N* should be equal or smaller than:
 
@@ -428,20 +382,11 @@ range for *N* is region specific and is defined in Section 7
 
 ### 4.3.3 MAC Frame Payload Encryption (FRMPayload) 
 
- If a data frame carries a payload, **FRMPayload** must be encrypted
-before the message  integrity code (**MIC**) is calculated.
+ If a data frame carries a payload, **FRMPayload** must be encrypted before the message  integrity code (**MIC**) is calculated.
 
- The encryption scheme used is based on the generic algorithm
-described in IEEE  802.15.4/2006 Annex B \[IEEE802154\] using AES with
-a key length of 128 bits.
+ The encryption scheme used is based on the generic algorithm described in IEEE  802.15.4/2006 Annex B \[IEEE802154\] using AES with a key length of 128 bits.
 
- As a default, the encryption/decryption is done by the LoRaWAN layer
-for all FPort. The 26 encryption/decryption may be done above the
-LoRaWAN layer for specific FPorts except 0, 27 if this is more
-convenient for the application. The information concerning which FPort
-from 28 which node is encrypted/decrypted outside of the LoRaWAN layer
-must be communicated to 29 the server using an out-of-band channel (see
-Section 19).
+ As a default, the encryption/decryption is done by the LoRaWAN layer for all FPort. The 26 encryption/decryption may be done above the LoRaWAN layer for specific FPorts except 0, 27 if this is more convenient for the application. The information concerning which FPort from 28 which node is encrypted/decrypted outside of the LoRaWAN layer must be communicated to 29 the server using an out-of-band channel (see Section 19).
 
 #### 4.3.3.1 Encryption in LoRaWAN 
 
@@ -458,18 +403,15 @@ Section 19).
 
   *pld* = **FRMPayload**
 
- For each data message, the algorithm defines a sequence of Blocks
-*A<sub>i</sub>* for *i* = 1..*k* with *k* = 37 ceil(len(*pld*) / 16):
+ For each data message, the algorithm defines a sequence of Blocks *A<sub>i</sub>* for *i* = 1..*k* with *k* = 37 ceil(len(*pld*) / 16):
 
 |  **Size (bytes)** | 1    | 4        | 1   | 4         | 4           | 1    | 1    |
 |---|---|---|---|---|---|---|---|
 | **A<sub>i</sub>**           | 0x01 | 4 x 0x00 | Dir |  DevAddr |  FCntUp or FCntDown| 0x00 | *i* |
 
- The direction field (**Dir**) is 0 for uplink frames and 1 for
- downlink frames.
+ The direction field (**Dir**) is 0 for uplink frames and 1 for downlink frames.
 
- The blocks *A<sub>i</sub>* are encrypted to get a sequence *S* of blocks
- *S<sub>i</sub>*:
+ The blocks *A<sub>i</sub>* are encrypted to get a sequence *S* of blocks *S<sub>i</sub>*:
 
 *S<sub>i</sub>* = aes128\_encrypt(K, *A<sub>i</sub>*) for *i* = 1..*k*
 
@@ -483,56 +425,36 @@ Section 19).
 
 #### 4.3.3.2 Encryption above the LoRaWAN layer 
 
- If the layers above LoRaWAN provide pre-encrypted FRMPayload to
- LoRaWAN on selected ports (but not on FPort 0 which is reserved for
- MAC commands), LoRaWAN transfers FRMPayload from MACPayload to the
- application and FRMPayload from the application to MACPayload without
- any modification of FRMPayload.
+ If the layers above LoRaWAN provide pre-encrypted FRMPayload to LoRaWAN on selected ports (but not on FPort 0 which is reserved for MAC commands), LoRaWAN transfers FRMPayload from MACPayload to the application and FRMPayload from the application to MACPayload without any modification of FRMPayload.
 
 ## 4.4 Message Integrity Code (MIC) 
 
- The message integrity code (**MIC**) is calculated over all the fields
- in the message.
+ The message integrity code (**MIC**) is calculated over all the fields in the message.
 
- *msg* = **MHDR** \| **FHDR** \| **FPort** \| **FRMPayload** whereby
- len(*msg*) denotes the length of the message in octets.
+ *msg* = **MHDR** \| **FHDR** \| **FPort** \| **FRMPayload** whereby len(*msg*) denotes the length of the message in octets.
 
  The **MIC** is calculated as follows \[RFC4493\]:
 
-*cmac* = aes128\_cmac(**NwkSKey**, *B<sub>0</sub>* \| *msg*)  
-**MIC** = *cmac*\[0..3\]
+*cmac* = aes128\_cmac(**NwkSKey**, *B<sub>0</sub>* \| *msg*)  **MIC** = *cmac*\[0..3\]
 
  whereby the block *B<sub>0</sub>* is defined as follows:
 
-|  **Size (bytes)** | 1    | 4        | 1   | 4         | 4           | 1    | 1          |
+|  **Size (bytes)** | 1    | 4| 1   | 4| 4| 1    | 1|
 |---|---|---|---|---|---|---|---|---|
-| **B0**           | 0x49 | 4 x 0x00 | Dir |  DevAddr |  FCntUp or FCntDown| 0x00 | len(*msg*) |
+| **B0**| 0x49 | 4 x 0x00 | Dir |  DevAddr |  FCntUp or FCntDown| 0x00 | len(*msg*) |
 
- The direction field (**Dir**) is 0 for uplink frames and 1 for
-downlink frames.
+ The direction field (**Dir**) is 0 for uplink frames and 1 for downlink frames.
 
 # 5 MAC Commands 
 
- For network administration, a set of MAC commands may be exchanged
- exclusively between the network server and the MAC layer on an
- end-device. MAC layer commands are never visible to the application or
- the application server or the application running on the end-device.
+ For network administration, a set of MAC commands may be exchanged exclusively between the network server and the MAC layer on an end-device. MAC layer commands are never visible to the application or the application server or the application running on the end-device.
 
- A single data frame can contain any sequence of MAC commands, either
- piggybacked in the **FOpts** field or, when sent as a separate data
- frame, in the **FRMPayload** field with the **FPort** field being set
- to 0. Piggybacked MAC commands are always sent without encryption and
- must not exceed 15 octets. MAC commands sent as **FRMPayload** are
- always encrypted and must not exceed the maximum **FRMPayload**
- length.
+ A single data frame can contain any sequence of MAC commands, either piggybacked in the **FOpts** field or, when sent as a separate data frame, in the **FRMPayload** field with the **FPort** field being set to 0. Piggybacked MAC commands are always sent without encryption and must not exceed 15 octets. MAC commands sent as **FRMPayload** are always encrypted and must not exceed the maximum **FRMPayload** length.
 
- > **Note:** MAC commands whose content shall not be disclosed to an
- eavesdropper must be sent in the **FRMPayload** of a separate data
- message.
+ > **Note:** MAC commands whose content shall not be disclosed to an eavesdropper must be sent in the **FRMPayload** of a separate data message.
 
  A MAC command consists of a command identifier (**CID**) of 1 octet
  followed by a possibly empty command-specific sequence of octets.
-
 
 |  **CID**  | **Command**   | **Transmitted by End-device**|**Transmitted by Gateway**  | **Short Description** |
 |---|---|---|---|---|
@@ -553,68 +475,39 @@ downlink frames.
 |0x80 to 0xFF|**Proprietary**|x|x|Reserved for proprietary network command extensions
 **17 Table 4: MAC commands**
 
-  > **Note:** The length of a MAC command is not explicitly given and must be implicitly known by the MAC implementation. Therefore unknown MAC commands cannot be skipped and the first unknown MAC command terminates the processing of the MAC command sequence. It is therefore advisable to order MAC commands according to the version of the LoRaWAN specification which has introduced a MAC 
- command for the first time. This way all MAC commands up to the 
- version of the LoRaWAN specification implemented can be processed 
- even in the presence of MAC commands specified only in a version of 
- the LoRaWAN specification newer than that implemented.
+  > **Note:** The length of a MAC command is not explicitly given and must be implicitly known by the MAC implementation. Therefore unknown MAC commands cannot be skipped and the first unknown MAC command terminates the processing of the MAC command sequence. It is therefore advisable to order MAC commands according to the version of the LoRaWAN specification which has introduced a MAC command for the first time. This way all MAC commands up to the version of the LoRaWAN specification implemented can be processed even in the presence of MAC commands specified only in a version of the LoRaWAN specification newer than that implemented.
 
-> **Note:** Any values adjusted by the network server (e.g., RX2, new
- or adjusted channels definitions) remain only valid until the next
- join of the end-device. Therefore after each successful join procedure the 
-end-device uses the default parameters again and it is up to the 
-network server to re-adjust the values again as needed.
+> **Note:** Any values adjusted by the network server (e.g., RX2, new or adjusted channels definitions) remain only valid until the next join of the end-device. Therefore after each successful join procedure the end-device uses the default parameters again and it is up to the network server to re-adjust the values again as needed.
 
  ## 5.1 Link Check commands (*LinkCheckReq*, *LinkCheckAns*)
 
+ With the **LinkCheckReq** command, an end-device may validate its connectivity with the  network. The command has no payload.
 
-
- With the **LinkCheckReq** command, an end-device may validate its
-connectivity with the  network. The command has no payload.
-
- When a ***LinkCheckReq*** is received by the network server via one
-or multiple gateways, it  responds with a ***LinkCheckAns*** command.
+ When a ***LinkCheckReq*** is received by the network server via one or multiple gateways, it  responds with a ***LinkCheckAns*** command.
 
 | **Size (bytes)**          | 1       | 1|
 | ---------------------------| --------| -------|
 | **LinkCheckAns Payload**  | Margin  | GwCnt|
 
- The demodulation margin (**Margin**) is an 8-bit unsigned integer in
-the range of 0..254  indicating the link margin in dB of the last
-successfully received **LinkCheckReq** command.  A value of "0"
-means that the frame was received at the demodulation floor (0 dB or no
- margin) while a value of "20", for example, means that the frame
-reached the gateway 20 dB  above the demodulation floor. Value "255"
-is reserved.
+ The demodulation margin (**Margin**) is an 8-bit unsigned integer in the range of 0..254  indicating the link margin in dB of the last successfully received **LinkCheckReq** command.  A value of "0" means that the frame was received at the demodulation floor (0 dB or no  margin) while a value of "20", for example, means that the frame reached the gateway 20 dB  above the demodulation floor. Value "255" is reserved.
 
- The gateway count (**GwCnt**) is the number of gateways that
-successfully received the last 5 **LinkCheckReq** command.
+ The gateway count (**GwCnt**) is the number of gateways that successfully received the last 5 **LinkCheckReq** command.
 
 ## 5.2 Link ADR commands (*LinkADRReq*, *LinkADRAns*) 
 
- With the **LinkADRReq** command, the network server requests an
-end-device to perform a  rate adaptation.
-
-
+ With the **LinkADRReq** command, the network server requests an end-device to perform a  rate adaptation.
 
 |**Size (bytes)**         |1                   |2        |1|
 |-------------------------| -------------------| --------| ------------|
 |**LinkADRReq Payload**   |DataRate\_TXPower   |ChMask   |Redundancy|
 
-
-
 |**Bits**               | \[7:4\]   | \[3:0\]|
 |------------------------| ----------| ---------|
 |**DataRate\_TXPower**  | DataRate  | TXPower|
 
+ The requested date rate (**DataRate**) and TX output power (**TXPower**) are region-specific 34 and are encoded as indicated in Chapter 7.
 
-
- The requested date rate (**DataRate**) and TX output power
-(**TXPower**) are region-specific 34 and are encoded as indicated in
-Chapter 7.
-
- The channel mask (**ChMask**) encodes the channels usable for uplink
- access as follows with bit 0 corresponding to the LSB:
+ The channel mask (**ChMask**) encodes the channels usable for uplink access as follows with bit 0 corresponding to the LSB:
 
 |  **Bit\#**   |**Usable channels**|
 |  ------------| ----------------------|
@@ -625,36 +518,17 @@ Chapter 7.
 
 **Table 5: Channel state table**
 
-  A bit in the **ChMask** field set to 1 means that the corresponding
- channel can be used for  uplink transmissions if this channel allows
- the data rate currently used by the end-device. A  bit set to 0 means
- the corresponding channels should be avoided.
+  A bit in the **ChMask** field set to 1 means that the corresponding channel can be used for  uplink transmissions if this channel allows the data rate currently used by the end-device. A  bit set to 0 means the corresponding channels should be avoided.
 
 |**Bits**              |7     |\[6:4\]      |\[3:0\]|
 |----------------------| -----| ------------| ---------|
 |**Redundancy bits**   |RFU   |ChMaskCntl   |NbRep|
 
- In the Redundancy bits the number of repetitions (**NbRep**) field is
- the number of repetition for each uplink message. This applies only to
- "unconfirmed" uplink frames. The default value is 1. The valid range
- is \[1:15\]. If **NbRep**==0 is received the end-device should use the
- default value. This field can be used by the network manager to
- control the redundancy of the node uplinks to obtain a given Quality
- of Service. The end-device performs frequency hopping as usual between
- repeated transmissions, it does wait after each repetition until the
- receive windows have expired.
+ In the Redundancy bits the number of repetitions (**NbRep**) field is the number of repetition for each uplink message. This applies only to "unconfirmed" uplink frames. The default value is 1. The valid range is \[1:15\]. If **NbRep**==0 is received the end-device should use the default value. This field can be used by the network manager to control the redundancy of the node uplinks to obtain a given Quality of Service. The end-device performs frequency hopping as usual between repeated transmissions, it does wait after each repetition until the receive windows have expired.
 
- The channel mask control (**ChMaskCntl**) field controls the
- interpretation of the previously defined **ChMask** bit mask. This
- field will only be non-zero values in networks where more than 16
- channels are implemented. It controls the block of 16 channels to
- which the **ChMask** applies. It can also be used to globally turn on
- or off all channels using specific modulation. This field usage is
- region specific and is defined in Chapter 7.
+ The channel mask control (**ChMaskCntl**) field controls the interpretation of the previously defined **ChMask** bit mask. This field will only be non-zero values in networks where more than 16 channels are implemented. It controls the block of 16 channels to which the **ChMask** applies. It can also be used to globally turn on or off all channels using specific modulation. This field usage is region specific and is defined in Chapter 7.
 
- The channel frequencies are region-specific and they are defined in
- Chapter 6. An enddevice answers to a ***LinkADRReq*** with a
- ***LinkADRAns*** command.
+ The channel frequencies are region-specific and they are defined in Chapter 6. An enddevice answers to a ***LinkADRReq*** with a ***LinkADRAns*** command.
 
 |**Size (bytes)**         |1|
 |-------------------------| --------|
@@ -667,8 +541,6 @@ Chapter 7.
 
 The ***LinkADRAns*** **Status** bits have the following meaning:
 
-2
-
 | |  **Bit = 0**   | **Bit = 1**|
 |---|---|---|
 |**Channel mask ACK** |The channel mask sent enables a yet undefined channel. The command was discarded and the end- device state was not changed.|The channel mask sent was successfully interpreted. All currently defined channel states were set according to the mask.
@@ -677,15 +549,11 @@ The ***LinkADRAns*** **Status** bits have the following meaning:
 
 **Table 6: LinkADRAns status bits signification**
 
-  If any of those three bits equals 0, the command did not succeed and
- the node has kept the previous state.
+  If any of those three bits equals 0, the command did not succeed and the node has kept the previous state.
 
 ## 5.3 End-Device Transmit Duty Cycle (*DutyCycleReq*, *DutyCycleAns*) 
 
-  The ***DutyCycleReq*** command is used by the network coordinator to
- limit the maximum  aggregated transmit duty cycle of an end-device.
- The aggregated transmit duty cycle  corresponds to the transmit duty
- cycle over all sub-bands.
+  The ***DutyCycleReq*** command is used by the network coordinator to limit the maximum  aggregated transmit duty cycle of an end-device. The aggregated transmit duty cycle  corresponds to the transmit duty cycle over all sub-bands.
 
 |**Size (bytes)**           |1|
 |---------------------------| -----------|
@@ -695,24 +563,15 @@ The ***LinkADRAns*** **Status** bits have the following meaning:
 
 *aggregated duty cycle* = 1 / 2<sup>MaxDcycle</sup>
 
- The valid range for **MaxDutyCycle** is \[0 : 15\]. A value of 0
- corresponds to "no duty cycle limitation" except the one set by the
- regional regulation.
+ The valid range for **MaxDutyCycle** is \[0 : 15\]. A value of 0 corresponds to "no duty cycle limitation" except the one set by the regional regulation.
 
- A value of 255 means that the end-device shall become silent
- immediately. It is equivalent to remotely switching off the
- end-device.
+ A value of 255 means that the end-device shall become silent immediately. It is equivalent to remotely switching off the end-device.
 
- An end-device answers to a ***DutyCycleReq*** with a
- ***DutyCycleAns*** command. The ***DutyCycleAns*** MAC reply does not
- contain any payload.
+ An end-device answers to a ***DutyCycleReq*** with a ***DutyCycleAns*** command. The ***DutyCycleAns*** MAC reply does not contain any payload.
 
 ## 5.4 Receive Windows Parameters (*RXParamSetupReq*, *RXParamSetupAns*)
 
-  The **RXParamSetupReq** command allows a change to the frequency
-     and the data rate set  for the second receive window (RX2)
-     following each uplink. The command also allows to  program an
-     offset between the uplink and the RX1 slot downlink data rates.
+The **RXParamSetupReq** command allows a change to the frequency and the data rate set  for the second receive window (RX2) following each uplink. The command also allows to  program an offset between the uplink and the RX1 slot downlink data rates.
 
 
 
