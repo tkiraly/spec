@@ -467,7 +467,7 @@ followed by a possibly empty command-specific sequence of octets.
 |0x07|**NewChannelReq**||x|Creates or modifies the definition of a radio channel|
 |0x07|**NewChannelAns**|x||Acknowledges a NewChannelReq command|
 |0x08|**RXTimingSetupReq**||x|Sets the timing of the of the reception slots|
-|0x08|**RXTimingSetupAns**|x||Acknowledge RXTimingSetupReq command|
+|0x08|**RXTimingSetupAns**|x||Acknowledges RXTimingSetupReq command|
 |0x80 to 0xFF|**Proprietary**|x|x|Reserved for proprietary network command extensions|
 **17 Table 4: MAC commands**
 
@@ -518,9 +518,10 @@ A bit in the **ChMask** field set to 1 means that the corresponding channel can 
 
 |**Bits**|7|\[6:4\]|\[3:0\]|
 |---|---|---|---|
-|**Redundancy bits**|RFU|ChMaskCntl|NbRep|
+|**Redundancy bits**|RFU|ChMaskCntl|NbTrans|
 
-In the Redundancy bits the number of repetitions (**NbRep**) field is the number of repetition for each uplink message. This applies only to "unconfirmed" uplink frames. The default value is 1. The valid range is \[1:15\]. If **NbRep**==0 is received the end-device should use the default value. This field can be used by the network manager to control the redundancy of the node uplinks to obtain a given Quality of Service. The end-device performs frequency hopping as usual between repeated transmissions, it does wait after each repetition until the receive windows have expired.
+In the Redundancy bits the **NbTrans** field is the number of transmissions for each uplink message. This applies only to "unconfirmed" uplink frames. The default value is 1 corresponding to a single transmission of each frame. The valid range is \[1:15\]. If **NbTrans**==0 is received the end-device should use the default value. This field can be used by the network manager to control the redundancy of the node uplinks to obtain a given Quality of Service. The end-device performs frequency hopping as usual between repeated transmissions, it does wait after each repetition until the receive windows have expired.  
+Whenever a downlink message is received during the RX1 slot window, it shall stop any further retransmission of the same uplink message. For class A devices, a reception in the RX2 slot has the same effect.
 
 The channel mask control (**ChMaskCntl**) field controls the interpretation of the previously defined **ChMask** bit mask. This field will only be non-zero values in networks where more than 16 channels are implemented. It controls the block of 16 channels to which the **ChMask** applies. It can also be used to globally turn on or off all channels using specific modulation. This field usage is region specific and is defined in Chapter 7.
 
@@ -538,7 +539,7 @@ The ***LinkADRAns*** **Status** bits have the following meaning:
 
 ||**Bit = 0**|**Bit = 1**|
 |---|---|---|
-|**Channel mask ACK**|The channel mask sent enables a yet undefined channel. The command was discarded and the end- device state was not changed.|The channel mask sent was successfully interpreted. All currently defined channel states were set according to the mask.|
+|**Channel mask ACK**|The channel mask sent enables a yet undefined channel or the channel mask required all channels to be disabled. The command was discarded and the end- device state was not changed.|The channel mask sent was successfully interpreted. All currently defined channel states were set according to the mask.|
 |**Data rate ACK**|The data rate requested is unknown to the end-device or is not possible given the channel mask provided (not supported by any of the enabled channels). The command was discarded and the end-device state was not changed.|The data rate was successfully set.|
 |**Power ACK**|The requested power level is not implemented in the device. The command was discarded and the end- device state was not changed.|The power level was successfully set.|
 
@@ -552,15 +553,17 @@ The ***DutyCycleReq*** command is used by the network coordinator to limit the m
 
 |**Size (bytes)**|1|
 |---|---|
-|**DutyCycleReq Payload**|MaxDCycle|
+|**DutyCycleReq Payload**|DutyCyclePL|
+
+|**Bits**|7:4|3:0|
+|---|---|---|
+|**DutyCyclePL**|RFU|MaxDCycle|
 
 The maximum end-device transmit duty cycle allowed is:
 
 *aggregated duty cycle* = 1 / 2<sup>MaxDcycle</sup>
 
 The valid range for **MaxDutyCycle** is \[0 : 15\]. A value of 0 corresponds to "no duty cycle limitation" except the one set by the regional regulation.
-
-A value of 255 means that the end-device shall become silent immediately. It is equivalent to remotely switching off the end-device.
 
 An end-device answers to a ***DutyCycleReq*** with a ***DutyCycleAns*** command. The ***DutyCycleAns*** MAC reply does not contain any payload.
 
@@ -580,11 +583,11 @@ The RX1DRoffset field sets the offset between the uplink data rate and the downl
 
 The data rate (RX2**DataRate**) field defines the data rate of a downlink using the second receive window following the same convention as the ***LinkADRReq*** command (0 means DR0/125kHz for example). The frequency (**Frequency**) field corresponds to the frequency of the channel used for the second receive window, whereby the frequency is coded following the convention defined in the ***NewChannelReq*** command.
 
-The ***RXParamSetupAns*** command is used by the end-device to acknowledge the reception of ***RXParamSetupReq*** command. The payload contains a single status byte.
+The ***RXParamSetupAns*** command is used by the end-device to acknowledge the reception of ***RXParamSetupReq*** command. The RXParamSetupAns command should be added in the FOpt field of all uplinks until a class A downlink is received by the end-device. This guarantees that even in presence of uplink packet loss, the network is always aware of the downlink parameters used by the end-device. The payload contains a single status byte.
 
 |**Size (bytes)**|1|
 |---|---|
-|**RX2SetupAns Payload**|Status|
+|**RX2ParamSetupAns Payload**|Status|
 
 The status (**Status**) bits have the following meaning.
 
@@ -604,7 +607,7 @@ If either of the 3 bits is equal to 0, the command did not succeed and the previ
 
 ### 5.5 End-Device Status (*DevStatusReq*,*DevStatusAns*)
 
-With the ***DevStatusReq*** command a network server may request status information from an end-device. The command has no payload. If a ***DevStatusReq*** is received by an end4 device, it responds with a ***DevStatusAns*** command.
+With the ***DevStatusReq*** command a network server may request status information from an end-device. The command has no payload. If a ***DevStatusReq*** is received by an end-device, it responds with a ***DevStatusAns*** command.
 
 |**Size (bytes)**|1|1|
 |---|---|---|
