@@ -1371,7 +1371,7 @@ The following synchronization words should be used :
 |**Modulation LORA**|**Sync word**|**Preamble length**|
 |---|---|---|
 |**LORA**|0x34|8 symbols|
-|**GFSK**|0xC194C1|5 bytes|
+|**GFSK**|0xC194C1|3 bytes|
 
 **Table 31: EU433 synch words**
 
@@ -1390,16 +1390,16 @@ EU433 end-devices should be capable of operating in the 433.05 to 434.79 MHz fre
 
 The first three channels correspond to 433.175, 433.375 and 433.575 MHz with DR0 to DR5 and must be implemented in every end-device. Those default channels cannot be modified through the ***NewChannelReq*** command and guarantee a minimal common channel set between end-devices and gateways of all networks. Other channels can be freely distributed across the allowed frequency range on a network per network basis.
 
-The following table gives the list of frequencies that should be used by end-devices to broadcast the JoinReq message. The JoinReq message transmit duty-cycle should never exceed 0.1%
+The following table gives the list of frequencies that should be used by end-devices to broadcast the JoinReq message. The JoinReq message transmit duty-cycle shall follow the rules described in chapter 8
 
 |**Modulation**|**Bandwidth [kHz]**|**Channel Frequency [MHz]**|**FSK Bitrate or LoRa DR / Bitrate**|**Nb Channels**|**Duty cycle**|
 |---|---|---|---|---|---|
 |LoRa|125|433.175<br/>433.375<br/>433.575<br/>|DR0 to DR5 / 0.3-5 kbps|3|<1%|
-**Table 30: EU433 JoinReq Channel List**
+**Table 32: EU433 JoinReq Channel List**
 
 <a name="fn16">1</a>: The EN300220 ETSI standard limits to 10% the maximum transmit duty-cycle in the 433MHz ISM band. The LoRaWAN requires a 1% transmit duty-cycle lower than the legal limit to avoid network congestion.
 
-#### 7.4.3 EU433 Data Rate and End-point Output Power encoding
+#### 7.4.3 EU433 Data Rate and End-device Output Power encoding
 
 The following encoding is used for Data Rate (DR) and End-point Output Power (TXPower)  in the EU433 band:
 
@@ -1424,7 +1424,7 @@ The following encoding is used for Data Rate (DR) and End-point Output Power (TX
 |4|-2 dBm|
 |5|-5 dBm|
 |6..15|RFU|
-**Table 31: Data rate and TX power table**
+**Table 33: Data rate and TX power table**
 
 #### 7.4.4 EU433 JoinAccept CFList
 
@@ -1434,7 +1434,7 @@ In this case the CFList is a list of five channel frequencies for the channels f
 
 |**Size (bytes)**|3|3|3|3|3|1|
 |---|---|---|---|---|---|---|
-|**CFList**|Freq Ch4|Freq Ch5|Freq Ch6|Freq CN7|Freq Ch8|RFU|
+|**CFList**|Freq Ch4|Freq Ch5|Freq Ch6|Freq Ch7|Freq Ch8|RFU|
 
 The actual channel frequency in Hz is 100 x frequency whereby values representing frequencies below 100 Mhz are reserved for future use. This allows setting the frequency of  a channel anywhere between 100 MHz to 1.67 GHz in 100 Hz steps. Unused channels have  a frequency value of 0. The **CFList** is optional and its presence can be detected by the  length of the join-accept message. If present, the **CFList** replaces all the previous channels  stored in the end-device apart from the three default channels as defined in Chapter 6.
 
@@ -1442,7 +1442,7 @@ The newly defined channels are immediately enabled and usable by the end-device 
 
 #### 7.4.5 EU433 LinkAdrReq command
 
-The CN780 LoRaWAN only supports a maximum of 16 channels. When **ChMaskCntl** field is  0 the ChMask field individually enables/disables each of the 16 channels.
+The EU433 LoRaWAN only supports a maximum of 16 channels. When **ChMaskCntl** field is  0 the ChMask field individually enables/disables each of the 16 channels.
 
 |**ChMaskCntl**|**ChMask applies to**|
 |---|---|
@@ -1454,7 +1454,7 @@ The CN780 LoRaWAN only supports a maximum of 16 channels. When **ChMaskCntl** fi
 |6|All channels ON The device should enable all currently defined channels independently of the ChMask field value.|
 |7|RFU|
 
-**Table 32: ChMaskCntl value table**
+**Table 34: ChMaskCntl value table**
 
 If the ChMask field value is one of the values meaning RFU, then end-device should reject the command and unset the "**Channel mask ACK**" bit in its response.
 
@@ -1473,7 +1473,7 @@ The maximum **MACPayload** size length (*M*) is given by the following table. It
 |6|230|222  |
 |7|230|222  |
 |8:15|Not defined|Not defined|
-**Table 33: EU433 maximum payload size**
+**Table 35: EU433 maximum payload size**
 
 If the end-device will never operate with a repeater then the maximum application payload  length in the absence of the optional **FOpt** control field should be:
 
@@ -1489,7 +1489,7 @@ If the end-device will never operate with a repeater then the maximum applicatio
 |7|250|242|
 |8:15|Not defined|Not defined|
 
-**Table 34 : EU433 maximum payload size (not repeater compatible)**
+**Table 36 : EU433 maximum payload size (not repeater compatible)**
 
 #### 7.4.7 EU433 Receive windows
 
@@ -1511,7 +1511,7 @@ The RX2 receive window uses a fixed frequency and data rate. The default paramet
 
 #### 7.4.8 EU433 Default Settings
 
-The following parameters are recommended values for the EU863-870Mhz band.
+The following parameters are recommended values for the EU433band.
 
 |Variable name|Variable value|
 |---|---|
