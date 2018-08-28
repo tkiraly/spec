@@ -609,7 +609,7 @@ If either of the 3 bits is equal to 0, the command did not succeed and the previ
 
 ### 5.5 End-Device Status (*DevStatusReq*,*DevStatusAns*)
 
-With the ***DevStatusReq*** command a network server may request status information from an end-device. The command has no payload. If a ***DevStatusReq*** is received by an end4 device, it responds with a ***DevStatusAns*** command.
+With the ***DevStatusReq*** command a network server may request status information from an end-device. The command has no payload. If a ***DevStatusReq*** is received by an end-device, it responds with a ***DevStatusAns*** command.
 
 |**Size (bytes)**|1|1|
 |---|---|---|
