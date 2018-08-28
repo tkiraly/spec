@@ -885,7 +885,7 @@ The first three channels correspond to 868.1, 868.3, and 868.5 MHz / DR0 to DR5 
 The following table gives the list of frequencies that should be used by end-devices to broadcast the JoinReq message. The JoinReq message transmit duty-cycle should never exceed 0.1%
 
 |**Modulation**|**Bandwidth [kHz]**|**Channel Frequency [MHz]**|**FSK Bitrate or LoRa DR / Bitrate**|**Nb Channels**|**Duty cycle**|
-|---|---|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|
 |LoRa|125|864.10<br/>864.30<br/>864.50<br/>868.10<br/>868.30<br/>868.50<br/>|DR0 to DR5 / 0.3-5 kbps|6|<0.1%|
 
 **Table 13: EU863-870 JoinReq Channel List**
