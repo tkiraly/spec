@@ -193,10 +193,10 @@ All LoRa uplink and downlink messages carry a PHY payload (**Payload**) starting
 |---|---|---|---|---|
 
 *PHYPayload:*  
-|MHDR |  MACPayload |  MIC|
-|------| ------------ |-----|
-|MHDR |  Join-Request |  MIC|
-|MHDR |  Join-Response |  MIC|
+|MHDR|MACPayload|MIC|
+|---|---|---|
+|MHDR|Join-Request|MIC|
+|MHDR|Join-Response|MIC|
 
 **Figure 6: PHY payload structure**
 
