@@ -292,6 +292,7 @@ For downlink frames the FCtrl content of the frame header is:
 |**FCtrl bits**|ADR|ADRACKReq|ACK|FPending|FOptsLen|
 
 For uplink frames the FCtrl content of the frame header is:
+
 |**Bit\#**|7|6|5|4|[3..0]|
 |---|---|---|---|---|---|
 |**FCtrl bits**|ADR|ADRACKReq|ACK|RFU|FOptsLen|
@@ -382,7 +383,7 @@ If a data frame carries a payload, **FRMPayload** must be encrypted before the m
 
 The encryption scheme used is based on the generic algorithm described in IEEE  802.15.4/2006 Annex B \[IEEE802154\] using AES with a key length of 128 bits.
 
-As a default, the encryption/decryption is done by the LoRaWAN layer for all FPort. The 26 encryption/decryption may be done above the LoRaWAN layer for specific FPorts except 0, 27 if this is more convenient for the application. The information concerning which FPort from 28 which node is encrypted/decrypted outside of the LoRaWAN layer must be communicated to 29 the server using an out-of-band channel (see Section 19).
+As a default, the encryption/decryption is done by the LoRaWAN layer for all FPort. The encryption/decryption may be done above the LoRaWAN layer for specific FPorts except 0, if this is more convenient for the application. The information concerning which FPort from which node is encrypted/decrypted outside of the LoRaWAN layer must be communicated to the server using an out-of-band channel (see Section 19).
 
 ##### 4.3.3.1 Encryption in LoRaWAN
 
@@ -436,7 +437,7 @@ The **MIC** is calculated as follows \[RFC4493\]:
 whereby the block *B<sub>0</sub>* is defined as follows:
 
 |**Size (bytes)**|1|4|1|4|4|1|1|
-|---|---|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|
 |**B0**|0x49|4 x 0x00|Dir|DevAddr|FCntUp or FCntDown|0x00|len(*msg*)|
 
 The direction field (**Dir**) is 0 for uplink frames and 1 for downlink frames.
@@ -501,7 +502,7 @@ With the **LinkADRReq** command, the network server requests an end-device to pe
 |---|---|---|
 |**DataRate\_TXPower**|DataRate|TXPower|
 
-The requested date rate (**DataRate**) and TX output power (**TXPower**) are region-specific 34 and are encoded as indicated in Chapter 7.
+The requested date rate (**DataRate**) and TX output power (**TXPower**) are region-specific and are encoded as indicated in Chapter 7.
 
 The channel mask (**ChMask**) encodes the channels usable for uplink access as follows with bit 0 corresponding to the LSB:
 
@@ -806,7 +807,7 @@ The join-accept message itself is encrypted with the **AppKey** as follows:
 
 aes128\_decrypt(AppKey, AppNonce \|NetID \|DevAddr \|RFU \| RxDelay \|CFList \|MIC)
 
-> **Note:** The network server uses an AES decrypt operation in ECB 35 mode to encrypt the join-accept message so that the end-device can 36 use an AES encrypt operation to decrypt the message. This way an 37 end-device only has to implement AES encrypt but not AES decrypt.
+> **Note:** The network server uses an AES decrypt operation in ECB mode to encrypt the join-accept message so that the end-device can use an AES encrypt operation to decrypt the message. This way an end-device only has to implement AES encrypt but not AES decrypt.
 
 > **Note:** Establishing these two session keys allows for a federated network server infrastructure in which network operators are not able  to eavesdrop on application data. In such a setting, the application provider must support the network operator in the process of an end device actually joining the network and establishing the NwkSKey for the end-device. At the same time the application provider commits to the network operator that it will take the charges for any traffic incurred by the end-device and retains full control over the AppSKey used for protecting its application data.
 
