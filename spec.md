@@ -290,7 +290,7 @@ For downlink frames the FCtrl content of the frame header is:
 
 |**Bit\#**|7|6|5|4|[3..0]|
 |---|---|---|---|---|---|
-|**FCtrl bits**|ADR|ADRACKReq|ACK|FPending|FOptsLen|
+|**FCtrl bits**|ADR|RFU|ACK|FPending|FOptsLen|
 
 For uplink frames the FCtrl content of the frame header is:
 
@@ -302,13 +302,13 @@ For uplink frames the FCtrl content of the frame header is:
 
 LoRa network allows the end-devices to individually use any of the possible data rates. This feature is used by the LoRaWAN to adapt and optimize the data rate of static end-devices. This is referred to as Adaptive Data Rate (ADR) and when this is enabled the network will be optimized to use the fastest data rate possible.
 
-Mobile end-devices should use their fixed default data rate as data rate management is not practical when the moving end-device causes fast changes in the radio environment.
+Adaptive Data Rate control may not be possible when the radio channel attenuation changes fast and constantly. When the network is unable to control the data rate of a device , the device’s application layer should control it. It is recommended to use a variety of different data rates in this case. The application layer should always try to minimize the aggregated air time used given the network conditions.
 
 If the **ADR** bit is set, the network will control the data rate of the end-device through the appropriate MAC commands. If the **ADR** bit is not set, the network will not attempt to control the data rate of the end-device regardless of the received signal quality. The **ADR** bit may be set and unset by the end-device or the Network on demand. However, whenever possible, the ADR scheme should be enabled to increase the battery life of the end-device and maximize the network capacity.
 
 > **Note:** Even mobile end-devices are actually immobile most of the time. So depending on its state of mobility, an end-device can request the network to optimize its data rate using ADR.
 
-If an end-device whose data rate is optimized by the network to use a data rate higher than its default data rate, it periodically needs to validate that the network still receives the uplink frames. Each time the uplink frame counter is incremented (for each new uplink, repeated transmissions do not increase the counter), the device increments an ADR\_ACK\_CNT counter. After ADR\_ACK\_LIMIT uplinks (ADR\_ACK\_CNT \>= ADR\_ACK\_LIMIT) without any downlink response, it sets the ADR acknowledgment request bit (**ADRACKReq**). The network is required to respond with a downlink frame within the time set by the ADR\_ACK\_DELAY, any received downlink frame following an uplink frame resets the ADR\_ACK\_CNT counter. The downlink **ACK** bit does not need to be set as any response during the receive slot of the end-device indicates that the gateway has still received the uplinks from this device. If no reply is received within the next ADR\_ACK\_DELAY uplinks (i.e., after a total of ADR\_ACK\_LIMIT + ADR\_ACK\_DELAY), the end-device may try to regain connectivity by switching to the next lower data rate that provides a longer radio range. The end-device will further lower its data rate step by step every time ADR\_ACK\_LIMIT is reached. The **ADRACKReq** shall not be set if the device uses its default data rate because in that case no action can be taken to improve the link range.
+If an end-device whose data rate is optimized by the network to use a data rate higher than its lowest available data rate, it periodically needs to validate that the network still receives the uplink frames. Each time the uplink frame counter is incremented (for each new uplink, repeated transmissions do not increase the counter), the device increments an ADR\_ACK\_CNT counter. After ADR\_ACK\_LIMIT uplinks (ADR\_ACK\_CNT \>= ADR\_ACK\_LIMIT) without any downlink response, it sets the ADR acknowledgment request bit (**ADRACKReq**). The network is required to respond with a downlink frame within the next ADR\_ACK\_DELAY frames, any received downlink frame following an uplink frame resets the ADR\_ACK\_CNT counter. The downlink **ACK** bit does not need to be set as any response during the receive slot of the end-device indicates that the gateway has still received the uplinks from this device. If no reply is received within the next ADR\_ACK\_DELAY uplinks (i.e., after a total of ADR\_ACK\_LIMIT + ADR\_ACK\_DELAY), the end-device may try to regain connectivity by switching to the next lower data rate that provides a longer radio range. The end-device will further lower its data rate step by step every time ADR\_ACK\_DELAY is reached. The **ADRACKReq** shall not be set if the device uses its lowest available data rate because in that case no action can be taken to improve the link range.
 
 > **Note:** Not requesting an immediate response to an ADR acknowledgement request provides flexibility to the network to optimally schedule its downlinks.
 
@@ -324,25 +324,25 @@ Acknowledgements are only sent in response to the latest message received and ar
 
 ##### 4.3.1.3 Retransmission procedure
 
-The number of retransmissions (and their timing) for the same message where an acknowledgment is requested but not received is at the discretion of the end device and may be different for each end-device, it can also be set or adjusted from the network server.
+The number of retransmissions (and their timing) for the same message where an acknowledgment is requested but not received is at the discretion of the end device and may be different for each end-device.
 
-> **Note:** Some example timing diagrams of the acknowledge mechanism are given in Chapter 18.
+> **Note:** Some example timing diagrams of the acknowledge mechanism are given in Chapter 19.
 
 > **Note:** If an end-device has reached its maximum number of retransmissions without receiving an acknowledgment, it can try to regain connectivity by moving to a lower data rate with longer reach. It is up to the end-device to retransmit the message again or to forfeit that message and move on.
 
 > **Note:** If the network server has reached its maximum number of retransmissions without receiving an acknowledgment, it will generally consider the end-device as unreachable until it receives further messages from the end-device. It is up to the network server to retransmit the message once connectivity to the end-device in question is regained or to forfeit that message and move on.
 
-> **Note:** The recommended data rate back-off strategy during retransmissions is described in Chapter 18.4
+> **Note:** The recommended data rate back-off strategy during retransmissions is described in Chapter 19.4
 
 ##### 4.3.1.4 Frame pending bit (FPending in FCtrl, downlink only)
 
 The frame pending bit (**FPending**) is only used in downlink communication, indicating that the gateway has more data pending to be sent and therefore asking the end-device to open another receive window as soon as possible by sending another uplink message.
 
-The exact use of **FPending** bit is described in Chapter 18.3.
+The exact use of **FPending** bit is described in Chapter 19.3.
 
 ##### 4.3.1.5 Frame counter (FCnt)
 
-Each end-device has two frame counters to keep track of the number of data frames sent uplink to the network server (FCntUp), incremented by the end-device and received by the end-device downlink from the network server (FCntDown), which is incremented by the network server. The network server tracks the uplink frame counter and generates the downlink counter for each end-device. After a join accept, the frame counters on the enddevice and the frame counters on the network server for that end-device are reset to 0. Subsequently FCntUp and FCntDown are incremented at the sender side by 1 for each data frame sent in the respective direction. At the receiver side, the corresponding counter is kept in sync with the value received provided the value received has incremented compared to the current counter value and is less than the value specified by MAX\_FCNT\_GAP<sup>[1](#fn10)</sup> after considering counter rollovers. If this difference is greater than the value of MAX\_FCNY\_GAP then too many data frames have been lost then subsequent will be discarded.
+Each end-device has two frame counters to keep track of the number of data frames sent uplink to the network server (FCntUp), incremented by the end-device and received by the end-device downlink from the network server (FCntDown), which is incremented by the network server. The network server tracks the uplink frame counter and generates the downlink counter for each end-device. After a JoinReq – JoinAccept message exchange or a reset for a personalized end-device, the frame counters on the end-device and the frame counters on the network server for that end-device are reset to 0. Subsequently FCntUp and FCntDown are incremented at the sender side by 1 for each new data frame sent in the respective direction. At the receiver side, the corresponding counter is kept in sync with the value received provided the value received has incremented compared to the current counter value and is less than the value specified by MAX\_FCNT\_GAP<sup>[1](#fn10)</sup> after considering counter rollovers. If this difference is greater than the value of MAX\_FCNT\_GAP then too many data frames have been lost then subsequent will be discarded. The FCnt is not incremented in case of multiple transmissions of an unconfirmed frame (see NbTrans parameter), or in the case of a confirmed frame that is not acknowledged.  
 
 The LoRaWAN allows the use of either 16-bits or 32-bits frame counters. The network side needs to be informed out-of-band about the width of the frame counter implemented in a given end-device. If a 16-bits frame counter is used, the **FCnt** field can be used directly as the counter value, possibly extended by leading zero octets if required. If a 32-bits frame counter is used, the **FCnt** field corresponds to the least-significant 16 bits of the 32-bits frame counter (i.e., FCntUp for data frames sent uplink and FCntDown for data frames sent downlink).
 
@@ -364,9 +364,14 @@ MAC commands cannot be simultaneously present in the payload field and the frame
 
 #### 4.3.2 Port field (FPort)
 
-If the frame payload field is not empty, the port field must be present. If present, an **FPort** value of 0 indicates that the **FRMPayload** contains MAC commands only; see Chapter 4.4 for a list of valid MAC commands. **FPort** values 1..223 (0x01..0xDF) are application specific. **FPort** values 224..255 (0xE0..0xFF) are reserved for future standardized application extensions.
+If the frame payload field is not empty, the port field must be present. If present, an **FPort** value of 0 indicates that the **FRMPayload** contains MAC commands only; see Chapter 4.4 for a list of valid MAC commands. **FPort** values 1..223 (0x01..0xDF) are application specific. FPort value 224 is dedicated to LoRaWAN Mac layer test protocol.
 
-|**Size (bytes)**|7..23|0..1|0..*N*|
+> Note : The purpose of Fport value 224 is to provide a dedicated Fport to run Mac compliance test scenarios over-the-air on final versions of devices, without having to rely on specific test versions of devices for practical aspects. The test is not supposed to be simultaneous with live operations, but the Mac layer implementation of the device shall be exactly the one used for the normal application. The test protocol is normally encrypted using the AppSKey. This ensures that the network cannot enable the device’s test mode without involving the device’s owner. If the test runs on a live network connected device, the way the test application on the network side learns the AppSkey is outside of the scope of the LoRaWAN specification. If the test runs using OTAA on a dedicated test bench (not a live network), the way the Appkey is communicated to the test bench, for secured JOIN process, is also outside of the scope of the specification.  
+The test protocol, running at application layer, is defined outside of the LoRaWAN spec, as it is an application layer protocol.
+
+**FPort** values 225..255 (0xE1..0xFF) are reserved for future standardized application extensions.
+
+|**Size (bytes)**|7..22|0..1|0..*N*|
 |---|---|---|---|
 |**MACPayload**|FHDR|FPort|FRMPayload|
 
@@ -384,24 +389,17 @@ If a data frame carries a payload, **FRMPayload** must be encrypted before the m
 
 The encryption scheme used is based on the generic algorithm described in IEEE  802.15.4/2006 Annex B \[IEEE802154\] using AES with a key length of 128 bits.
 
-As a default, the encryption/decryption is done by the LoRaWAN layer for all FPort. The encryption/decryption may be done above the LoRaWAN layer for specific FPorts except 0, if this is more convenient for the application. The information concerning which FPort from which node is encrypted/decrypted outside of the LoRaWAN layer must be communicated to the server using an out-of-band channel (see Section 19).
-
-##### 4.3.3.1 Encryption in LoRaWAN
-
-The key *K* used depends on the FPort of the data message:
-
 |**FPort**|**K**|
 |---|---|
 |0|NwkSKey|
 |1..255|AppSKey|
-
 **Table 3: FPort list**
 
 The fields encrypted are:
 
 *pld* = **FRMPayload**
 
-For each data message, the algorithm defines a sequence of Blocks *A<sub>i</sub>* for *i* = 1..*k* with *k* = 37 ceil(len(*pld*) / 16):
+For each data message, the algorithm defines a sequence of Blocks *A<sub>i</sub>* for *i* = 1..*k* with *k* = ceil(len(*pld*) / 16):
 
 |**Size (bytes)**|1|4|1|4|4|1|1|
 |---|---|---|---|---|---|---|---|
@@ -420,10 +418,6 @@ Encryption and decryption of the payload is done by truncating
 (*pld* \|pad<sub>16</sub>) xor S
 
 to the first len(*pld*) octets.
-
-##### 4.3.3.2 Encryption above the LoRaWAN layer
-
-If the layers above LoRaWAN provide pre-encrypted FRMPayload to LoRaWAN on selected ports (but not on FPort 0 which is reserved for MAC commands), LoRaWAN transfers FRMPayload from MACPayload to the application and FRMPayload from the application to MACPayload without any modification of FRMPayload.
 
 ### 4.4 Message Integrity Code (MIC)
 
