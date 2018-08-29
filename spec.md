@@ -1659,9 +1659,10 @@ If the end-device will never operate with a repeater then the maximum applicatio
 |14:15|Not defined|Not defined|
 **Table 42: AU915-928 maximum payload size(not repeater compatible)**
 
-#### 7.5.7 AU915-928 Receive windows 
+#### 7.5.7 AU915-928 Receive windows
+
 - The RX1 receive channel is a function of the upstream channel used to initiate the data exchange. The RX1 receive channel can be determined as follows.
-  - RX1 Channel Number = Transmit Channel Number modulo 8 
+  - RX1 Channel Number = Transmit Channel Number modulo 8
 - The RX1 window data rate depends on the transmit data rate (see Table 24 below).
 - The RX2 (second receive window) settings uses a fixed data rate and frequency. Default parameters are 923.3Mhz / DR8  
 
@@ -1692,6 +1693,8 @@ The following parameters are recommended values for the AU915-928 band.
 |ACK_TIMEOUT|2 +/- 1 s (random delay between 1 and 3 seconds)|
 
 If the actual parameter values implemented in the end-device are different from those default values (for example the end-device uses a longer RECEIVE_DELAY1 & 2 latency), those parameters must be communicated to the network server using an out-of-band channel during the end-device commissioning process. The network server may not accept parameters different from those default values.
+
+
 
 ## CLASS B -- BEACON
 
