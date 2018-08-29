@@ -1123,7 +1123,7 @@ The maximum **MACPayload** size length (*M*) is given by the following table. It
 |---|---|---|
 |0|19|11|
 |1|61|53|
-|2|137|129|
+|2|134|126|
 |3|250|242|
 |4|250|242|
 |5:7|Not defined|Not defined|
