@@ -1511,7 +1511,7 @@ The RX2 receive window uses a fixed frequency and data rate. The default paramet
 
 #### 7.4.8 EU433 Default Settings
 
-The following parameters are recommended values for the EU433band.
+The following parameters are recommended values for the EU433   band.
 
 |Variable name|Variable value|
 |---|---|
@@ -1525,6 +1525,173 @@ The following parameters are recommended values for the EU433band.
 |ACK\_TIMEOUT|2 +/- 1 s (random delay between 1 and 3 seconds)|
 
 If the actual parameter values implemented in the end-device are different from those default values (for example the end-device uses a longer RECEIVE\_DELAY1 & 2 latency) , those parameters must be communicated to the network server using an out-of-band channel during the end-device commissioning process. The network server may not accept parameters different from those default values.
+
+### 7.5 Australia 915-928MHz ISM Band
+
+#### 7.5.1 AU915-928 Preamble Format
+The following synchronization words should be used:
+
+|Modulation|Sync word|Preamble length|
+|---|---|---|
+LORA|0x34|8 symbols|
+
+LoRaWAN does not make use of GFSK modulation in the AU915-928 ISM band. 
+#### 7.5.2 AU915-928 Channel Frequencies
+
+The AU ISM Band shall be divided into the following channel plans.
+
+- Upstream – 64 channels numbered 0 to 63 utilizing LoRa 125 kHz BW varying from DR0 to DR3, using coding rate 4/5, starting at 915.2 MHz and incrementing linearly by 200 kHz to 927.8 MHz
+- Upstream – 8 channels numbered 64 to 71 utilizing LoRa 500 kHz BW at DR4 starting at 915.9 MHz and incrementing linearly by 1.6 MHz to 927.1 MHz
+- Downstream – 8 channels numbered 0 to 7 utilizing LoRa 500 kHz BW at DR8 to DR13) starting at 923.3 MHz and incrementing linearly by 600 kHz to 927.5 MHz
+
+![au channels](figure13.png)
+
+**Figure 11: AU915-928 channel frequencies**
+
+AU ISM band end-devices should use the following default parameters:
+
+- Default radiated transmit output power: 20 dBm o All Devices may use a maximum of +30 dBm.  
+  - Devices, when transmitting with 125 kHz BW must frequency hop using a minimum of 20 channels. . The transmission shall never last more than 400 ms.
+  - Devices, when transmitting with 500 kHz BW may use a maximum of +26 dBm
+
+AU915-928 end-devices should be capable of operating in the 915 to 928 MHz frequency band and should feature a channel data structure to store the parameters of 72 channels. A channel data structure corresponds to a frequency and a set of data rates usable on this frequency.
+
+If using the over-the-air activation procedure, the end-device should broadcast the JoinReq message alternatively on a random 125 kHz channel amongst the 64 channels defined using **DR0** and a random 500 kHz channel amongst the 4 channels defined using **DR4**. The enddevice should change channel for every transmission.
+
+Personalized devices shall have all 72 channels enabled following a reset.
+
+#### 7.5.3 AU915-928 Data Rate and End-point Output Power encoding
+
+The following encoding is used for Data Rate (**DR**) and End-point Output Power (**TXPower**) in the AU915-928 band:
+ 
+|DataRate|Configuration|Indicative physical bit rate [bit/sec]|
+|---|---|---|
+|0|LoRa: SF10 / 125 kHz|980|
+|1|LoRa: SF9 / 125 kHz|1760|
+|2|LoRa: SF8 / 125 kHz|3125|
+|3|LoRa: SF7 / 125 kHz|5470|
+|4|LoRa: SF8 / 500 kHz|12500|
+|5:7|RFU||
+|8|LoRa: SF12 / 500 kHz|980|
+|9|LoRa: SF11 / 500 kHz|1760|
+|10|LoRa: SF10 / 500 kHz|3900|
+|11|LoRa: SF9 / 500 kHz|7000|
+|12|LoRa: SF8 / 500 kHz|12500|
+|13|LoRa: SF7 / 500 kHz|21900|
+|14:15|RFU||
+
+**Table 38: AU915 Data rate table**
+
+|TXPower|Configuration|
+|---|---|
+|0|30 dBm - 2*TXpower|
+|1|28 dBm|
+|2 	|26 dBm|
+|3 : 9|...|
+|10|10 dBm|
+|11:15|RFU|
+
+**Table 39 : AU915 TX power table**
+
+DR4 is identical to DR12, DR8...13 must be implemented in end-devices and are reserved for future applications.
+
+#### 7.5.4 AU915-928 JoinAccept CFList
+
+The AU915-928 LoRaWAN does not support the use of the optional CFlist appended to the JoinAccept message. If the CFlist is not empty it is ignored by the end-device.
+#### 7.5.5 AU915-928 LinkAdrReq command
+
+For the AU915-928 version the ChMaskCntl field of the LinkADRReq command has the following meaning:
+
+|ChMaskCntl|ChMask applies to|
+|---|---|
+|0|Channels 0 to 15|
+|1|Channels 16 to 31|
+|..|..|
+|4|Channels 64 to 71|
+|5|RFU|
+|6|All 125 kHz ON ChMask applies to channels 64 to 71|
+|7|All 125 kHz OFF ChMask applies to channels 64 to 71|
+**Table 40: ChMaskCntl value table**
+
+If **ChMaskCntl** = 6 (resp 7) then 125 kHz channels are enabled (resp disabled). Simultaneously the channels 64 to 67 are set according to the **ChMask** bit mask.
+> Note: ACMA regulation requires hopping over at least 20 channels when using channels that do not meet a minimum 6 dB bandwidth of 500 kHz.
+
+#### 7.5.6 AU915-928 Maximum payload size
+
+The maximum **MACPayload** size length (M) is given by the following table. It is derived from the maximum allowed transmission time at the PHY layer taking into account a possible repeater encapsulation. The maximum application payload length in the absence of the optional **FOpt** MAC control field (N) is also given for information only. The value of N might be smaller if the **FOpt** field is not empty:
+
+|DataRate|M|N|
+|---|---|---|
+|0|19|11|
+|1|61|53|
+|2|134|126|
+|3|250|242|
+|4|250|242|
+|5:7|Not defined|Not defined|
+|8|41|33|
+|9|117|109|
+|10|230|222|
+|11|230|222|
+|12|230|222|
+|13|230|222|
+|14:15|Not defined|Not defined|
+
+**Table 41: AU915-928 maximum payload size**
+
+The greyed lines correspond to the data rates that may be used by an end-device behind a repeater.
+
+If the end-device will never operate with a repeater then the maximum application payload length in the absence of the optional FOpt control field should be:
+
+|DataRate|M|N|
+|---|---|---|
+|0|19|11|
+|1|61|53|
+|2|134|126|
+|3|250|242|
+|4|250|242|
+|5:7|Not defined|Not defined|
+|8|61|53|
+|9|137|129|
+|10|250|242|
+|11|250|242|
+|12|250|242|
+|13|250|242|
+|14:15|Not defined|Not defined|
+**Table 42: AU915-928 maximum payload size(not repeater compatible)**
+
+#### 7.5.7 AU915-928 Receive windows 
+- The RX1 receive channel is a function of the upstream channel used to initiate the data exchange. The RX1 receive channel can be determined as follows.
+  - RX1 Channel Number = Transmit Channel Number modulo 8 
+- The RX1 window data rate depends on the transmit data rate (see Table 24 below).
+- The RX2 (second receive window) settings uses a fixed data rate and frequency. Default parameters are 923.3Mhz / DR8  
+
+|Upstream data rate|Downstream data rate|Downstream data rate|Downstream data rate|Downstream data rate|
+|---|---|---|---|---|
+|RX1DROffset|0|1|2|3|
+|DR0|DR10|DR9|DR8|DR8|
+|DR1|DR11|DR10|DR9|DR8|
+|DR2|DR12|DR11|DR10|DR9|
+|DR3|DR13|DR12|DR11|DR10|
+|DR4|DR13|DR13|DR12|DR11|
+**Table 43: AU RX1DROffset**
+
+The allowed values for RX1DROffset are in the [0:3] range. Values in the range [4:7] are reserved for future use.
+
+#### 7.5.8 AU915-928 Default Settings
+
+The following parameters are recommended values for the AU915-928 band.
+|Variable name|Variable value|
+|---|---|
+|RECEIVE_DELAY1|1 s|
+|RECEIVE_DELAY2|2 s (must be RECEIVE_DELAY1 + 1s)|
+|JOIN_ACCEPT_DELAY1|5 s|
+|JOIN_ACCEPT_DELAY2|6 s|
+|MAX_FCNT_GAP|16384|
+|ADR_ACK_LIMIT|64|
+|ADR_ACK_DELAY|32|
+|ACK_TIMEOUT|2 +/- 1 s (random delay between 1 and 3 seconds)|
+
+If the actual parameter values implemented in the end-device are different from those default values (for example the end-device uses a longer RECEIVE_DELAY1 & 2 latency), those parameters must be communicated to the network server using an out-of-band channel during the end-device commissioning process. The network server may not accept parameters different from those default values.
 
 ## CLASS B -- BEACON
 
