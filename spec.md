@@ -1,6 +1,6 @@
-# **LoRa Specification**
+# **LoRaWAN Specification**
 
-Copyright © 2015 LoRa Alliance, Inc. All rights reserved.
+Copyright © (2015, 2016) LoRa Alliance, Inc. All rights reserved.
 
 NOTICE OF USE AND DISCLOSURE
 ---
@@ -30,8 +30,8 @@ LoRaWAN™ Specification
 **Authors**:  
 N. Sornin (Semtech), M. Luis (Semtech), T. Eirich (IBM), T. Kramp (IBM), O.Hersent (Actility)
 
-**Version**: V1.0.1  
-**Date**: 2016 Feb  
+**Version**: V1.0.2  
+**Date**: 2016 July  
 **Status:** Final
 
 > **Important note:** This is a candidate specification for the LoRa™ Alliance protocol named LoRaWAN™.
@@ -53,7 +53,7 @@ End-devices may transmit on any channel available at any time, using any availab
 
 - The end-device respects the maximum transmit duration (or dwell time) relative to the sub-band used and local regulations.
 
-> **Note:** Maximum transmit duty-cycle and dwell time per sub-band are region specific and are defined in the Chapter 7.
+> **Note:** While this document specifies the protocol details, various operational parameters that are based on the regional regulations, such as  Maximum transmit duty-cycle and dwell time per sub-band are region specific and are described in a separate document (LoRaWAN Regional Parameters [PARAMS]). This document separation allows addition of new regional parameters without having to modify the base protocol specification. .
 
 <a name="fn1">1</a>: Gateways are also known as **concentrators** or **base stations**.  
 <a name="fn2">2</a>: End-devices are also known as **motes**.  
@@ -155,11 +155,11 @@ Following each uplink transmission the end-device opens two short receive window
 
 #### 3.3.1 First receive window channel, data rate, and start
 
-The first receive window RX1 uses a frequency that is a function of the uplink frequency and a data rate that is a function of the data rate used for the uplink. RX1 opens RECEIVE\_DELAY1<sup>[1](#fn7)</sup> seconds (+/- 20 microseconds) after the end of the uplink modulation. The relationship between uplink and RX1 slot downlink data rate is region specific and detailed in the Section 7. By default the first receive window datarate is identical to the datarate of the last uplink.
+The first receive window RX1 uses a frequency that is a function of the uplink frequency and a data rate that is a function of the data rate used for the uplink. RX1 opens RECEIVE\_DELAY1<sup>[1](#fn7)</sup> seconds (+/- 20 microseconds) after the end of the uplink modulation. The relationship between uplink and RX1 slot downlink data rate is region specific and detailed in the LoRaWAN Regional Parameters document [PARAMS]. By default the first receive window datarate is identical to the datarate of the last uplink.
 
 #### 3.3.2 Second receive window channel, data rate, and start
 
-The second receive window RX2 uses a fixed configurable frequency and data rate and opens RECEIVE\_DELAY2<sup>[1](#fn7)</sup> seconds (+/- 20 microseconds) after the end of the uplink modulation. The frequency and data rate used can be modified through MAC commands (see Section 5).The default frequency and data rate to use are region specific and detailed in the Section 7.
+The second receive window RX2 uses a fixed configurable frequency and data rate and opens RECEIVE\_DELAY2<sup>[1](#fn7)</sup> seconds (+/- 20 microseconds) after the end of the uplink modulation. The frequency and data rate used can be modified through MAC commands (see Section 5).The default frequency and data rate to use are region specific and detailed in the LoRaWAN Regional Parameters document [PARAMS].
 
 <a name="fn7">1</a>: RECEIVE_DELAY1 and RECEIVE_DELAY2 are described in Chapter 6.
 
@@ -326,19 +326,19 @@ Acknowledgements are only sent in response to the latest message received and ar
 
 The number of retransmissions (and their timing) for the same message where an acknowledgment is requested but not received is at the discretion of the end device and may be different for each end-device.
 
-> **Note:** Some example timing diagrams of the acknowledge mechanism are given in Chapter 19.
+> **Note:** Some example timing diagrams of the acknowledge mechanism are given in Chapter 18.
 
 > **Note:** If an end-device has reached its maximum number of retransmissions without receiving an acknowledgment, it can try to regain connectivity by moving to a lower data rate with longer reach. It is up to the end-device to retransmit the message again or to forfeit that message and move on.
 
 > **Note:** If the network server has reached its maximum number of retransmissions without receiving an acknowledgment, it will generally consider the end-device as unreachable until it receives further messages from the end-device. It is up to the network server to retransmit the message once connectivity to the end-device in question is regained or to forfeit that message and move on.
 
-> **Note:** The recommended data rate back-off strategy during retransmissions is described in Chapter 19.4
+> **Note:** The recommended data rate back-off strategy during retransmissions is described in Chapter 18.4
 
 ##### 4.3.1.4 Frame pending bit (FPending in FCtrl, downlink only)
 
 The frame pending bit (**FPending**) is only used in downlink communication, indicating that the gateway has more data pending to be sent and therefore asking the end-device to open another receive window as soon as possible by sending another uplink message.
 
-The exact use of **FPending** bit is described in Chapter 19.3.
+The exact use of **FPending** bit is described in Chapter 18.3.
 
 ##### 4.3.1.5 Frame counter (FCnt)
 
@@ -350,7 +350,7 @@ The end-device shall not reuse the same FCntUp value, except for retransmission,
 
 > **Note:** Since the **FCnt** field carries only the least-significant 16 bits of the 32-bits frame counter, the server must infer the 16 most-significant bits of the frame counter from the observation of the traffic.
 
-<a name="fn10">1</a>: Actual value for MAX_FCNT_GAP, RECEIVE_DELAY1 and RECEIVE_DELAY2 can be found at 7.1.7 for EU863-870 or 7.2.7 for US902-928.
+<a name="fn10">1</a>: Actual value for MAX_FCNT_GAP, RECEIVE_DELAY1 and RECEIVE_DELAY2 can be found at Error! Reference source not found for EU863-870 or Error! Reference source not found for US902-928.
 
 ##### 4.3.1.6 Frame options (FOptsLen in FCtrl, FOpts)
 
@@ -375,7 +375,7 @@ The test protocol, running at application layer, is defined outside of the LoRaW
 |---|---|---|---|
 |**MACPayload**|FHDR|FPort|FRMPayload|
 
-*N* is the number of octets of the application payload. The valid range for *N* is region specific and is defined in Section 7
+*N* is the number of octets of the application payload. The valid range for *N* is region specific and is defined in the LoRaWAN Regional Parameters document [PARAMS].
 
 *N* should be equal or smaller than:
 
@@ -468,7 +468,12 @@ followed by a possibly empty command-specific sequence of octets.
 |0x07|**NewChannelAns**|x||Acknowledges a NewChannelReq command|
 |0x08|**RXTimingSetupReq**||x|Sets the timing of the of the reception slots|
 |0x08|**RXTimingSetupAns**|x||Acknowledges RXTimingSetupReq command|
+0x09|**TxParamSetupReq**||x|Used by the network server to set the maximum allowed dwell time and Max EIRP of end-device, based on local regulations|
+0x09|**TxParamSetupAns**|x||Acknowledges TxParamSetupReq command|
+0x0A|**DlChannelReq**||x|Modifies the definition of a downlink RX1 radio channel by shifting the downlink frequency from the uplink frequencies (i.e. creating an asymmetric channel)|
+0x0A|**DlChannelAns**|x||Acknowledges DlChannelReq command|
 |0x80 to 0xFF|**Proprietary**|x|x|Reserved for proprietary network command extensions|
+
 **17 Table 4: MAC commands**
 
 > **Note:** The length of a MAC command is not explicitly given and must be implicitly known by the MAC implementation. Therefore unknown MAC commands cannot be skipped and the first unknown MAC command terminates the processing of the MAC command sequence. It is therefore advisable to order MAC commands according to the version of the LoRaWAN specification which has introduced a MAC command for the first time. This way all MAC commands up to the version of the LoRaWAN specification implemented can be processed even in the presence of MAC commands specified only in a version of the LoRaWAN specification newer than that implemented.
@@ -501,9 +506,7 @@ With the **LinkADRReq** command, the network server requests an end-device to pe
 |---|---|---|
 |**DataRate\_TXPower**|DataRate|TXPower|
 
-The requested date rate (**DataRate**) and TX output power (**TXPower**) are region-specific and are encoded as indicated in Chapter 7.
-
-The channel mask (**ChMask**) encodes the channels usable for uplink access as follows with bit 0 corresponding to the LSB:
+The requested date rate (**DataRate**) and TX output power (**TXPower**) are region-specific and are encoded as indicated in the LoRaWAN Regional Parameters document [PARAMS].The TX output power indicated in the command is to be considered the maximum transmit power the device may operate at.  An end-device will acknowledge as successful a command which specifies a higher transmit power than it is capable of using and should, in that case, operate at its maximum possible power. The channel mask (**ChMask**) encodes the channels usable for uplink access as follows with bit 0 corresponding to the LSB:
 
 |**Bit\#**|**Usable channels**|
 |---|---|
@@ -523,7 +526,7 @@ A bit in the **ChMask** field set to 1 means that the corresponding channel can 
 In the Redundancy bits the **NbTrans** field is the number of transmissions for each uplink message. This applies only to "unconfirmed" uplink frames. The default value is 1 corresponding to a single transmission of each frame. The valid range is \[1:15\]. If **NbTrans**==0 is received the end-device should use the default value. This field can be used by the network manager to control the redundancy of the node uplinks to obtain a given Quality of Service. The end-device performs frequency hopping as usual between repeated transmissions, it does wait after each repetition until the receive windows have expired.  
 Whenever a downlink message is received during the RX1 slot window, it shall stop any further retransmission of the same uplink message. For class A devices, a reception in the RX2 slot has the same effect.
 
-The channel mask control (**ChMaskCntl**) field controls the interpretation of the previously defined **ChMask** bit mask. This field will only be non-zero values in networks where more than 16 channels are implemented. It controls the block of 16 channels to which the **ChMask** applies. It can also be used to globally turn on or off all channels using specific modulation. This field usage is region specific and is defined in Chapter 7.
+The channel mask control (**ChMaskCntl**) field controls the interpretation of the previously defined **ChMask** bit mask. This field will only be non-zero values in networks where more than 16 channels are implemented. It controls the block of 16 channels to which the **ChMask** applies. It can also be used to globally turn on or off all channels using specific modulation. This field usage is region specific and is defined in the LoRaWAN Regional Parameters document [PARAMS]. The network server may include multiple LinkAdrReq commands within a single downlink message. For the purpose of configuring the end-device channel mask, the end-device will process all contiguous LinkAdrReq messages, in the order present in the downlink message, as a single atomic block command.  The end-device will accept or reject all Channel Mask controls in the contiguous block, and provide consistent Channel Mask ACK status indications for each command in the contiguous block in each LinkAdrAns message, reflecting the acceptance or rejection of this atomic channel mask setting.  The device will only process the DataRate, TXPower and NbTrans from the last message in the contiguous block, as these settings govern the end-device global state for these values. The enddevice will provide consistent ACK status in each LinkAdrAns message reflecting the acceptance or rejection of these final settings.
 
 The channel frequencies are region-specific and they are defined in Chapter 6. An enddevice answers to a ***LinkADRReq*** with a ***LinkADRAns*** command.
 
