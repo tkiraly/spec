@@ -1864,7 +1864,7 @@ Aggregated during the next 10 hours|T0+1<t<T0+11|Transmit time < 36Sec|
 
 Class B must be considered as experimental in this version of the specification
 
-## 8 Introduction to Class B
+## 9 Introduction to Class B
 
 This section describes the LoRaWAN Class B layer which is optimized for battery-powered end-devices that may be either mobile or mounted at a fixed location.
 
@@ -1876,7 +1876,7 @@ One of the limitations of LoRaWAN Class A is the Aloha method of sending data fr
 
 > **Note:** The decision to switch from Class A to Class B comes from the application layer of the end-device. If this class A to Class B switch needs to be controlled from the network side, the customer application must use one of the end-device's Class A uplinks to send back a downlink to the application layer, and it needs the application layer on the end-device to recognize this request -- this process is not managed at the LoRaWAN level.
 
-## 9 Principle of synchronous network initiated downlink (Class-B option)
+## 10 Principle of synchronous network initiated downlink (Class-B option)
 
 For a network to support end-devices of Class B, all gateways must synchronously broadcast a beacon providing a timing reference to the end-devices. Based on this timing reference the end-devices can periodically open receive windows, hereafter called "ping slots", which can be used by the network infrastructure to initiate a downlink communication. A network initiated downlink using one of these ping slots is called a "ping". The gateway chosen to initiate this downlink communication is selected by the network server based on the signal quality indicators of the last uplink of the end-device. For this reason, if an enddevice moves and detects a change in the identity advertised in the received beacon, it must send an uplink to the network server so that the server can update the downlink routing path database.
 
@@ -1888,19 +1888,19 @@ All end-devices start and join the network as end-devices of Class A. The end-de
 
 - Once in Class B mode, the MAC layer sets to 1 the *Class B* bit of the FCTRL field of every uplink frame transmitted. This bit signals to the server that the device has switched to Class B. The MAC layer will autonomously schedule a reception slot for each beacon and each ping slot. When the beacon reception is successful the enddevice LoRaWAN layer forwards the beacon content to the application together with the measured radio signal strength. The end-device LoRaWAN layer takes into account the maximum possible clock drift in the scheduling of the beacon reception slot and ping slots. When a downlink is successfully demodulated during a ping slot, it is processed similarly to a downlink as described in the LoRaWAN Class A specification.
 
-- A mobile end-device must periodically inform the network server of its location to update the downlink route. This is done by transmitting a normal (possibly empty) "unconfirmed" or "confirmed" uplink. The end-device LoRaWAN layer will appropriately set the *Class B* bit to 1. Optimally this can be done more efficiently if the application detects that the node is moving by analyzing the beacon content. In that case the end-device must apply a random delay (as defined in Section 15.5 between the beacon reception and the uplink transmission to avoid systematic uplink collisions.
+- A mobile end-device must periodically inform the network server of its location to update the downlink route. This is done by transmitting a normal (possibly empty) "unconfirmed" or "confirmed" uplink. The end-device LoRaWAN layer will appropriately set the *Class B* bit to 1. Optimally this can be done more efficiently if the application detects that the node is moving by analyzing the beacon content. In that case the end-device must apply a random delay (as defined in Section 16.5 between the beacon reception and the uplink transmission to avoid systematic uplink collisions.
 
-- If no beacon has been received for a given period (as defined in Section 12.2), the synchronization with the network is lost. The MAC layer must inform the application layer that it has switched back to Class A. As a consequence the end-device LoRaWAN layer stops setting the *Class B* bit in all uplinks and this informs the network server that the end-device is no longer in Class B mode. The end-device application can try to switch back to Class B periodically. This will restart this process starting with a beacon search.
+- If no beacon has been received for a given period (as defined in Section 13.2), the synchronization with the network is lost. The MAC layer must inform the application layer that it has switched back to Class A. As a consequence the end-device LoRaWAN layer stops setting the *Class B* bit in all uplinks and this informs the network server that the end-device is no longer in Class B mode. The end-device application can try to switch back to Class B periodically. This will restart this process starting with a beacon search.
 
 The following diagram illustrates the concept of beacon reception slots and ping slots.
 
 ![beacon diagram](figure04.png)
 
-**Figure 11: Beacon reception slot and ping slots**
+**Figure 13: Beacon reception slot and ping slots**
 
 In this example, given the beacon period is 128 s, the end-device also opens a ping reception slot every 32 s. Most of the time this ping slot is not used by the server and therefore the end-device reception window is closed as soon as the radio transceiver has assessed that no preamble is present on the radio channel. If a preamble is detected the radio transceiver will stay on until the downlink frame is demodulated. The MAC layer will then process the frame, check that its address field matches the end-device address and that the Message Integrity Check is valid before forwarding it to the application layer.
 
-## 10 Uplink frame in Class B mode
+## 11 Uplink frame in Class B mode
 
 The uplink frames in Class B mode are same as the Class A uplinks with the exception of the RFU bit in the FCtrl field in the Frame header. In the Class A uplink this bit is unused (RFU). This bit is used for Class B uplinks.
 
@@ -1912,21 +1912,21 @@ The *Class B* bit set to 1 in an uplink signals the network server that the devi
 
 The signification of the FPending bit for downlink is unaltered and still signals that one or more downlink frames are queued for this device in the server and that the device should keep is receiver on as described in the Class A specification.
 
-## 11 Downlink Ping frame format (Class B option)
+## 12 Downlink Ping frame format (Class B option)
 
-### 11.1 Physical frame format
+### 12.1 Physical frame format
 
 A downlink Ping uses the same format as a Class A downlink frame but might follow a different channel frequency plan.
 
-### 11.2 Unicast & Multicast MAC messages
+### 12.2 Unicast & Multicast MAC messages
 
 Messages can be "unicast" or "multicast". Unicast messages are sent to a single end-device and multicast messages are sent to multiple end-devices. All devices of a multicast group must share the same multicast address and associated encryption keys. The LoRaWAN Class B specification does not specify means to remotely setup such a multicast group or securely distribute the required multicast key material. This must either be performed during the node personalization or through the application layer.
 
-#### 11.2.1 Unicast MAC message format
+#### 12.2.1 Unicast MAC message format
 
 The MAC payload of a unicast downlink **Ping** uses the format defined in the Class A specification. It is processed by the end-device in exactly the same way. The same frame counter is used and incremented whether the downlink uses a Class B ping slot or a Class A "piggy-back" slot.
 
-#### 11.2.2 Multicast MAC message format
+#### 12.2.2 Multicast MAC message format
 
 The Multicast frames share most of the unicast frame format with a few exceptions:
 
@@ -1936,7 +1936,7 @@ The Multicast frames share most of the unicast frame format with a few exception
 
 - The **FPending** bit indicates there is more multicast data to be sent. If it is set the next multicast receive slot will carry a data frame. If it is not set the next slot may or may not carry data. This bit can be used by end-devices to evaluate priorities for conflicting reception slots.
 
-## 12 Beacon acquisition and tracking
+## 13 Beacon acquisition and tracking
 
 Before switching from Class A to Class B, the end-device must first receive one of the network beacons to align his internal timing reference with the network.
 
@@ -1946,34 +1946,34 @@ A Class B device may be temporarily unable to receive beacons (out of range from
 
 > **Note:** For example, a device which internal clock is defined with a +/10ppm precision may drift by +/-1.3mSec every beacon period.
 
-### 12.1 Minimal beacon-less operation time
+### 13.1 Minimal beacon-less operation time
 
 In the event of beacon loss, a device shall be capable of maintaining Class B operation for 2 hours (120 minutes) after it received the last beacon. This temporary Class B operation without beacon is called "beacon-less" operation. It relies on the end-device's own clock to keep timing.
 
 During beacon-less operation, unicast, multicast and beacon reception slots must all be progressively expanded to accommodate the end-device's possible clock drift.
 
 ![beacon-less operation](figure05.png)
-**Figure 12 : beacon-less temporary operation**
+**Figure 14 : beacon-less temporary operation**
 
-### 12.2 Extension of beacon-less operation upon reception
+### 13.2 Extension of beacon-less operation upon reception
 
 During this 120 minutes time interval the reception of any beacon directed to the end-device, should extend the Class B beacon-less operation further by another 120 minutes as it allows to correct any timing drift and reset the receive slots duration.
 
-### 12.3 Minimizing timing drift
+### 13.3 Minimizing timing drift
 
 The end-devices may use the beacon's (when available) precise
 periodicity to calibrate their internal clock and therefore reduce the initial clock frequency imprecision. As the timing oscillator's exhibit a predictable temperature frequency shift, the use of a temperature sensor could enable further minimization of the timing drift.
 
-## 13 Class B Downlink slot timing
+## 14 Class B Downlink slot timing
 
-### 13.1 Definitions
+### 14.1 Definitions
 
 To operate successfully in Class B the end-device must open reception slots at precise instants relative to the infrastructure beacon. This section defines the required timing.
 
 The interval between the start of two successive beacons is called the beacon period. The beacon frame transmission is aligned with the beginning of the BEACON\_RESERVED interval. Each beacon is preceded by a guard time interval where no ping slot can be placed. The length of the guard interval corresponds to the time on air of the longest allowed frame. This is to insure that a downlink initiated during a ping slot just before the guard time will always have time to complete without colliding with the beacon transmission. The usable time interval for ping slot therefore spans from the end of the beacon reserved time interval to the beginning of the next beacon guard interval.
 
 ![beacon timing](figure06.png)
-**Figure 13: Beacon timing**
+**Figure 15: Beacon timing**
 
 |Beacon\_period|128 s|
 |---|---|
@@ -1981,7 +1981,7 @@ The interval between the start of two successive beacons is called the beacon pe
 |Beacon\_guard|3.000 s|
 |Beacon-window|122.880 s|
 
-**Table 35: Beacon timing**
+**Table 48: Beacon timing**
 
 The beacon frame time on air is actually much shorter than the beacon reserved time interval to allow appending network management broadcast frames in the future.
 
@@ -1994,7 +1994,7 @@ An end-device using the slot number N must turn on its receiver exactly *Ton* se
 The latest ping slot starts at *beacon*\_*reserved* + 4095 \* 30 ms = 124 970 ms after the beacon start or 3030 ms before the beginning of
 the next beacon.
 
-### 13.2 Slot randomization
+### 14.2 Slot randomization
 
 To avoid systematic collisions or over-hearing problems the slot index is randomized and  changed at every beacon period.
 
@@ -2032,7 +2032,7 @@ In the case where a multicast ping slot and a unicast ping slot collide and cann
 
 The randomization scheme prevents a systematic collision between unicast and multicast slots. If collisions happen during a beacon period then it is unlikely to occur again during the next beacon period.
 
-## 14 Class B MAC commands
+## 15 Class B MAC commands
 
 All commands described in the Class A specification shall be implemented in Class B  devices. The Class B specification adds the following MAC commands.
 
@@ -2047,7 +2047,7 @@ All commands described in the Class A specification shall be implemented in Clas
 |0x13|*BeaconFreqReq*|x|x|Command used by the network server to modify the frequency at which the end- device expects to receive beacon broadcast|
 |0x13|*BeaconFreqAns*|x|x|Used by the end-device to acknowledge a BeaconFreqReq command|
 
-### 14.1 PingSlotInfoReq
+### 15.1 PingSlotInfoReq
 
 With the ***PingSlotInfoReq*** command an end-device informs the server of its unicast ping  slot periodicity and expected data rate. This command must only be used to inform the  server of the parameters of a UNICAST ping slot. A multicast slot is entirely defined by the  application and should not use this command.
 
@@ -2066,13 +2066,13 @@ The **Periodicity** subfield is an unsigned 3 bits integer encoding the ping slo
 - **Periodicity** = 0 means that the end-device opens a ping slot every second
 - **Periodicity** = 7 , every 128 seconds which is the maximum ping period supported by the LoRaWAN Class B specification.
 
-The **Data rate** subfield encodes the data rate at which the end-point expects any ping. This uses the same encoding scheme that the ***LinkAdrReq*** command described in the Class A specification.
+The **Data rate** subfield encodes the data rate at which the end-device expects any ping. This uses the same encoding scheme that the ***LinkAdrReq*** command described in the Class A specification.
 
 The server needs to be aware of the end-device ping slot periodicity or expected data rate  else Class B downlinks will not happen successfully. For that purpose the ***PingSlotInfoReq***  MAC command **must be acknowledged** with a ***PingSlotInfoAns*** before the device can  switch from class A to Class B**.** To change its ping slot scheduling or data rate a device  should first revert to Class A, send the new parameters through a ***PingSlotInfoReq***  command and get an acknowledge from the server through a ***PinSlotInfoAns***. It can then  switch back to Class B with the new parameters.
 
 This command can be concatenated with any other MAC command in the **FHDRFOpt** field  as described in the Class A specification frame format.
 
-### 14.2 BeaconFreqReq
+### 15.2 BeaconFreqReq
 
 This command is sent by the server to the end-device to modify the frequency on which this  end-device expects the beacon.
 
@@ -2088,7 +2088,7 @@ A valid non-zero Frequency will force the device to listen to the beacon on a fi
 
 A value of 0 instructs the end-device to use the default beacon frequency plan as defined in  the "Beacon physical layer" section. Where applicable the device resumes frequency  hopping beacon search.
 
-### 14.3 PingSlotChannelReq
+### 15.3 PingSlotChannelReq
 
 This command is sent by the server to the end-device to modify the frequency on which this  end-device expects the downlink pings.
 
@@ -2127,7 +2127,7 @@ The **Status** bits have the following meaning:
 |**Data rate range ok**|The designated data rate range exceeds the ones currently defined for this end device, the previous range is kept|The data rate range is compatible with the possibilities of the end device|
 |**Channel frequency ok**|The device cannot use this frequency, the previous ping frequency is kept|The device is able to use this frequency.|
 
-### 14.4 BeaconTimingReq
+### 15.4 BeaconTimingReq
 
 This command is sent by the end-device to request the next beacon timing and channel. This MAC command has no payload. The **BeaconTimingReq*** & ***BeaconTimingAns***  mechanism is only meant to accelerate the initial beacon search to lower the end-device  energy requirement.
 
@@ -2135,7 +2135,7 @@ The network may answer only a limited number of requests per a given time period
 
 End-devices requiring a fast beacon lock must implement an autonomous beacon finding  algorithm.
 
-### 14.5 BeaconTimingAns
+### 15.5 BeaconTimingAns
 
 This command is sent by the network to answer a ***BeaconInfoReq*** request.
 
@@ -2149,9 +2149,9 @@ The "**Delay**" field is a 16bits unsigned integer. If the remaining time betwee
 
 In networks where the beacon uses alternatively several channels, the "**Channel**" field is the index of the beaconing channel on which the next beacon will be broadcasted. For networks  where the beacon broadcast frequency is fixed then this field content is 0.
 
-## 15 Beaconing (Class B option)
+## 16 Beaconing (Class B option)
 
-### 15.1 Beacon physical layer
+### 16.1 Beacon physical layer
 
 Besides relaying messages between end-devices and network servers, all gateways participate in providing a time-synchronization mechanisms by sending beacons at regular fixed intervals configurable per network (BEACON\_INTERVAL). All beacons are transmitted in radio packet implicit mode, that is, without a LoRa physical header and with no CRC being appended by the radio.
 
@@ -2162,7 +2162,7 @@ The beacon Preamble begins with (a longer than default) 10 unmodulated symbols. 
 
 The beacon frame length is tightly coupled to the operation of the radio Physical layer. Therefore the actual frame length might change from one region implementation to another. The changing fields are highlighted in **Bold** in the following sections.
 
-#### 15.1.1 EU 863-870MHz ISM Band
+#### 16.1.1 EU 863-870MHz ISM Band
 
 The beacons are transmitted using the following settings
 
@@ -2177,7 +2177,7 @@ The beacon frame content is:
 |---|---|---|---|---|---|
 |**BCNPayload**|NetID|Time|**CRC**|GwSpecific|**CRC**|
 
-#### 15.1.2 US 902-928MHz ISM Band
+#### 16.1.2 US 902-928MHz ISM Band
 
 The beacons are transmitted using the following settings:
 
@@ -2215,9 +2215,9 @@ The beacon frame content is:
 |---|---|---|---|---|---|---|
 |**BCNPayload**|NetID|Time|**CRC**|GwSpecific|**RFU**|**CRC**|
 
-### 15.2 Beacon frame content
+### 16.2 Beacon frame content
 
-The beacon payload **BCNPayload** consists of a network common part and a gateway specific part.
+The beacon payload **BCNPayload** consists of a network common part and a gatewayspecific part.
 
 |**Size (bytes)**|3|4|1/2|7|0/1|2|
 |---|---|---|---|---|---|---|
@@ -2253,7 +2253,7 @@ Listening and synchronizing to the network common part is sufficient to operate 
 
 > **Note:** As mentioned before, all gateways send their beacon at exactly the same point in time (i.e., time-synchronously) so that for network common part there are no visible on-air collisions for a listening enddevice even if the end-device simultaneously receives beacons from several gateways. With respect to the gateway specific part, collision occurs but an end-device within the proximity of more than one gateway will still be able to decode the strongest beacon with high probability.
 
-### 15.3 Beacon GwSpecific field format
+### 16.3 Beacon GwSpecific field format
 
 The content of the **GwSpecific** field is as follow:
 
@@ -2273,7 +2273,7 @@ The information descriptor**InfoDesc** describes how the information field **Inf
 
 For a single omnidirectional antenna gateway the **InfoDesc** value is 0 when broadcasting GPS coordinates. For a site featuring 3 sectored antennas for example, the first antenna broadcasts the beacon with **InfoDesc** equals 0, the second antenna with **InfoDesc** field  equals 1, etc ...
 
-#### 15.3.1 Gateway GPS coordinate:InfoDesc = 0, 1 or 2
+#### 16.3.1 Gateway GPS coordinate:InfoDesc = 0, 1 or 2
 
 For **InfoDesc** = 0 ,1 or 2, the content of the **Info** field encodes the GPS coordinates of the  antenna broadcasting the beacon
 
@@ -2287,7 +2287,7 @@ The latitude and longitude fields (**Lat** and **Lng**, respectively) encode the
 
 - The east-west longitude is encoded using a signed 24 bit word where - 2<sup>23</sup>corresponds to 180° west an 2<sup>23</sup> corresponds to 180° east. The Greenwich meridian corresponds to 0.
 
-### 15.4 Beaconing precise timing
+### 16.4 Beaconing precise timing
 
 The beacon is sent every 128 seconds starting at 00:00:00 Coordinated Universal Time (UTC), 1 January 1970 plus **NwkID plus** TBeaconDelay. Therefore the beacon is sent at B<sub>T</sub> = *k* \* 128 + **NwkID** + TBeaconDelay  seconds after 00:00:00 Coordinated Universal Time (UTC), 1 January 1970 whereby*k* is the smallest integer for which *k* \* 128 + **NwkID**\>*T* whereby *T* = seconds since 00:00:00 Coordinated Universal Time (UTC), 1 January 1970.
 
@@ -2295,7 +2295,7 @@ The beacon is sent every 128 seconds starting at 00:00:00 Coordinated Universal 
 
 Whereby TBeaconDelay is a network specific delay in the \[0:50\] ms range. TBeaconDelay may vary from one network to another and is meant to allow a slight transmission delay of the gateways. TBeaconDelay must be the same for all gateways of a given network. TBeaconDelay must be smaller than 50 ms. All end-devices ping slots use the beacon transmission time as a timing reference, therefore the network server as to take TBeaconDelay into account when scheduling the class B downlinks.
 
-### 15.5 Network downlink route update requirements
+### 16.5 Network downlink route update requirements
 
 When the network attempts to communicate with an end-device using a Class B downlink slot, it transmits the downlink from the gateway which was closest to the end-device when the last uplink was received. Therefore the network server needs to keep track of the rough position of every Class B device.
 
@@ -2308,13 +2308,13 @@ The end-device has the choice between 2 basic strategies:
 
 Failure to report cell change will result in Class B downlink being temporary not operational. The network server may have to wait for the next end-device uplink to transmit downlink traffic.
 
-## 16 Class B unicast & multicast downlink channel frequencies
+## 17 Class B unicast & multicast downlink channel frequencies
 
-### 16.1 EU 863-870MHz ISM Band
+### 17.1 EU 863-870MHz ISM Band
 
 All unicast&multicastClass B downlinks use a single frequency channel defined by the "***PingSlotChannelReq"*** MAC command. The default frequency is 869.525MHz
 
-### 16.2 US 902-928MHz ISM Band
+### 17.2 US 902-928MHz ISM Band
 
 By default Class B downlinks use a channel function of the Time field of the last beacon (see Beacon Frame content) and the DevAddr.
 
@@ -2337,7 +2337,7 @@ The underlying idea is to allow network operators to configure end-devices to us
 
 ---
 
-## 17 Class C: Continuously listening end-device
+## 18 Class C: Continuously listening end-device
 
 The end-devices implanting the Class C option are used for applicationsthat have sufficient power available and thus do not need to minimizereception time.
 
@@ -2347,14 +2347,14 @@ The Class C end-device will listen with RX2 windows parameters as oftenas possib
 
 > **Note:** There is not specific message for a node to tell the server that it is a Class C node. It is up to the application on server side to know that it manages Class C nodes based on the contract passed during the join procedure.
 
-### 17.1 Second receive window duration for Class C
+### 18.1 Second receive window duration for Class C
 
-Class C devices implement the same two receive windows as Class Adevices, but they do not close RX2 window until they need to send again.Therefore they may receive a downlink in the RX2 window at nearly anytime. A short listening window on RX2 frequency and data rate is alsoopened between the end of the transmission and the beginning of the RX1receive window.
+Class C devices implement the same two receive windows as Class Adevices, but they do not close RX2 window until they need to send again.Therefore they may receive a downlink in the RX2 window at nearly any time including downlinks sent for the purpose of MAC command or ACK transmission. A short listening window on RX2 frequency and data rate is alsoopened between the end of the transmission and the beginning of the RX1receive window.
 
 ![class c timing](figure07.png)
-**Figure 14: Class C end-device receive slot timing.**
+**Figure 16: Class C end-device receive slot timing.**
 
-### 17.2 Class C Multicast downlinks
+### 18.2 Class C Multicast downlinks
 
 Similarly to Class B, Class C devices may receive multicast downlinkframes. The multicast address and associated network session key andapplication session key must come from the application layer. The samelimitations apply for Class C multicast downlink frames:
 
@@ -2368,45 +2368,45 @@ Similarly to Class B, Class C devices may receive multicast downlinkframes. The 
 
 This sub-section is only a recommendation.
 
-## 18 Examples and Application Information
+## 19 Examples and Application Information
 
 Examples are illustrations of the LoRaWAN spec for information, but they are not part of the formal specification.
 
-### 18.1 Uplink Timing Diagram for Confirmed Data Messages
+### 19.1 Uplink Timing Diagram for Confirmed Data Messages
 
 The following diagram illustrates the steps followed by an end-device trying to transmit two confirmed data frames (Data0 and Data1):
 
 ![uplink diagram](figure08.png)
 
-**Figure 15: Uplink timing diagram for confirmed data messages**
+**Figure 17: Uplink timing diagram for confirmed data messages**
 
 The end-device first transmits a confirmed data frame containing the Data0 payload at an arbitrary instant and on an arbitrary channel. The frame counter Cu is simply derived by adding 1 to the previous uplink frame counter. The network receives the frame and generates a downlink frame with the ACK bit set exactly RECEIVE\_DELAY1 seconds later, using the first receive window of the end-device. This downlink frame uses the same data rate and the same channel as the Data0 uplink. The downlink frame counter Cd is also derived by adding 1 to the last downlink towards that specific end-device. If there is no downlink payload pending the network shall generate a frame without a payload. In this example the frame carrying the ACK bit is not received.
 
 If an end-point does not receive a frame with the ACK bit set in one of the two receive windows immediately following the uplink transmission it may resend the same frame with the same payload and frame counter again at least ACK\_TIMEOUT seconds after the second reception window. This resend must be done on another channel and must obey the duty cycle limitation as any other normal transmission. If this time the network receives the ACK downlink during its first receive window, as soon as the ACK frame is demodulated, the end-device is free to transmit a new frame on a new channel.
 
-### 18.2 The third ACK frame in this example also carries an application payload. A downlink frame can carry any combination of ACK, MAC control commands and payload. Downlink Diagram for Confirmed Data Messages
+### 19.2 The third ACK frame in this example also carries an application payload. A downlink frame can carry any combination of ACK, MAC control commands and payload. Downlink Diagram for Confirmed Data Messages
 
 The following diagram illustrates the basic sequence of a "confirmed" downlink.
 
 ![downlink diagram](figure09.png)
-**Figure 16: Downlink timing diagram for confirmed data messages**
+**Figure 18: Downlink timing diagram for confirmed data messages**
 
 The frame exchange is initiated by the end-device transmitting an "unconfirmed" application payload or any other frame on channel A. The network uses the downlink receive window to transmit a "confirmed" data frame towards the end-device on the same channel A. Upon reception of this data frame requiring an acknowledgement, the end-device transmits a frame with the ACK bit set at its own discretion. This frame might also contain piggybacked data or MAC commands as its payload. This ACK uplink is treated like any standard uplink, and as such is transmitted on a random channel that might be different from channel A.
 
 > **Note:** To allow the end-devices to be as simple as possible and have keep as few states as possible it may transmit an explicit (possibly empty) acknowledgement data message immediately after the reception of a data message requiring an acknowledgment. Alternatively the end-device may defer the transmission of an acknowledgement to piggyback it with its next data message.
 
-### 18.3 Downlink Timing for Frame-Pending Messages
+### 19.3 Downlink Timing for Frame-Pending Messages
 
 The next diagram illustrates the use of the **frame pending** (FPending) bit on a downlink. The FPending bit can only be set on a downlink frame and informs the end-device that the network has several frames pending for him; the bit is ignored for all uplink frames. If a frame with the FPending bit set requires an acknowledgement, the end-device shall do so as described before. If no acknowledgment is required, the end-device may send an empty data message to open additional receive windows at its own discretion, or wait until it has some data to transmit itself and open receive windows as usual.
 >**Note:** The FPending bit is independent to the acknowledgment scheme.
 
 ![downlink diagram](figure10.png)
-**Figure 17: Downlink timing diagram for frame-pending messages, example 1**
+**Figure 19: Downlink timing diagram for frame-pending messages, example 1**
 
 In this example the network has two confirmed data frames to transmit to the end-device. The frame exchange is initiated by the end-device via a normal "unconfirmed" uplink message on channel A. The network uses the first receive window to transmit the Data0 with the bit FPending set as a confirmed data message. The device acknowledges the reception of the frame by transmitting back an empty frame with the ACK bit set on a new channel B. RECEIVE\_DELAY1 seconds later, the network transmits the second frame Data1 on channel B, again using a confirmed data message but with the FPending bit cleared. The end-device acknowledges on channel C.
 
 ![downlink diagram](figure11.png)
-**Figure 18: Downlink timing diagram for frame-pending messages, example 2**
+**Figure 20: Downlink timing diagram for frame-pending messages, example 2**
 
 In this example, the downlink frames are "unconfirmed" frames, the end-device does not need to send back and acknowledge. Receiving the Data0 unconfirmed frame with the FPending bit set the end-device sends an empty data frame. This first uplink is not received by the network. If no downlink is received during the two receive windows, the network has to wait for the next spontaneous uplink of the end-device to retry the transfer. The enddevice can speed up the procedure by sending a new empty data frame.
 >**Note:** An acknowledgement is never sent twice.
@@ -2418,9 +2418,9 @@ The FPending bit, the ACK bit, and payload data can all be present in the same d
 
 The end-device sends a "confirmed data" uplink. The network can answer with a confirmed downlink containing Data + ACK + "Frame pending" then the exchange continues as previously described.
 
-### 18.4 Data-Rate Adaptation during Message Retransmissions
+### 19.4 Data-Rate Adaptation during Message Retransmissions
 
-When an end-device attempts the transmission of a "confirmed' frame toward the network it expects to receive an acknowledgement in one of the subsequent reception slot. In the absence of the acknowledgement it will try to re-transmit the samedata again. This re transmission happens on a new frequency channel,but can also happen at a different data  rate (preferable lower) thanthe previous one. It is strongly recommended to adopt the  followingre-transmission strategy.
+When an end-device attempts the transmission of a "confirmed" frame toward the network it expects to receive an acknowledgement in one of the subsequent reception slot. In the absence of the acknowledgement it will try to re-transmit the samedata again. This retransmission happens on a new frequency channel,but can also happen at a different data  rate (preferable lower) thanthe previous one. It is strongly recommended to adopt the  followingre-transmission strategy.
 
 The first transmission of the "confirmed" frame happens with a data rate DR.
 
