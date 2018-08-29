@@ -2085,7 +2085,7 @@ The end-device sends a "confirmed data" uplink. The network can answer with a co
 
 ### 18.4 Data-Rate Adaptation during Message Retransmissions
 
-When an end-device attempts the transmission of a "confirmed' frame toward the network it expects to receive an acknowledgement in one of the subsequent reception slot. In the absence of the acknowledgement it will try to re-transmit the samedata again. This re transmission happens on a new frequency channel,but can also happen at a different data  rate (preferable lower) thanthe previous one. It is strongly recommended to adopt the  followingre-transmission strategy.
+When an end-device attempts the transmission of a "confirmed" frame toward the network it expects to receive an acknowledgement in one of the subsequent reception slot. In the absence of the acknowledgement it will try to re-transmit the samedata again. This re transmission happens on a new frequency channel,but can also happen at a different data  rate (preferable lower) thanthe previous one. It is strongly recommended to adopt the  followingre-transmission strategy.
 
 The first transmission of the "confirmed" frame happens with a data rate DR.
 
