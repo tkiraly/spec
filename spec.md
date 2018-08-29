@@ -795,7 +795,9 @@ The join-request message can be transmitted using any data rate and following a 
 
 #### 6.2.5 Join-accept message
 
-The network server will respond to the **join-request** message with a **join-accept** message if the end-device is permitted to join a network. The join-accept message is sent like a normal  downlink but uses delays JOIN\_ACCEPT\_DELAY1 or JOIN\_ACCEPT\_DELAY2 (instead of RECEIVE\_DELAY1 and RECEIVE\_DELAY2, respectively). The channel frequency and data rate used for these two receive windows are identical to the one used for the RX1 and RX2  receive windows described in the "receive windows" section of the "Physical Layer" chapter  No response is given to the end-device if the join request is not accepted.
+The network server will respond to the **join-request** message with a **join-accept** message if the end-device is permitted to join a network. The join-accept message is sent like a normal  downlink but uses delays JOIN\_ACCEPT\_DELAY1 or JOIN\_ACCEPT\_DELAY2 (instead of RECEIVE\_DELAY1 and RECEIVE\_DELAY2, respectively). The channel frequency and data rate used for these two receive windows are identical to the one used for the RX1 and RX2  receive windows described in the "receive windows" section of the "Physical Layer" chapter.
+
+No response is given to the end-device if the join request is not accepted.
 
 The join-accept message contains an application nonce (**AppNonce**) of 3 octets, a network  identifier (**NetID**), an end-device address (**DevAddr**), a delay between TX and RX  (**RxDelay**) and an optional list of channel frequencies (**CFList**) for the network the end-device is joining. The CFList option is region specific and is defined in Section 7.
 
