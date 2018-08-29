@@ -2445,7 +2445,7 @@ Any further transmission uses the last data rate used.
 
 For example if an end-device sends a "confirmed" frame first using DR5 and has to retransmit 3 times (twice at DR5 then twice at DR4), the next frame transmitted will use DR4 Other example, if an end-device sends a "confirmed" frame first using DR5 and does not receive an acknowledge after 8 transmissions (2 at DR5, 2 at DR4, ... , 2 at DR2), and the application of this end-device re-initiates a "confirmed" transmission a little later, the first two transmission will be tentatively at DR2, then switch to DR1, then to DR0.
 
-## 19 Recommendation on contract to be provided to the network server by the end-device provider at the time of provisioning
+## 20 Recommendation on contract to be provided to the network server by the end-device provider at the time of provisioning
 
 Configuration data related to the end-device and its characteristics must be known by the network server at the time of provisioning. --This provisioned data is called the "contract". This contract cannot be provided by the end-device and must be supplied by the end-device provider using another channel (out-of-band communication).
 
@@ -2457,7 +2457,7 @@ This data will include:
 
 - Application type (Alarm, Metering, Asset Tracking, Supervision, Network Control)
 
-## 20 Recommendation on finding the locally used channels
+## 21 Recommendation on finding the locally used channels
 
 End-devices that can be activated in territories that are using different frequencies for LoRaWAN will have to identify what frequencies are supported for join message at their current location before they send any message. The following methods are proposed:
 
@@ -2466,13 +2466,31 @@ End-devices that can be activated in territories that are using different freque
 - End-device can search for a beacon and if this one is sending the antenna GPS coordinate, it can use this to identify its region
 - End-device can search for a beacon and if this one is sending a list of join frequencies, it can use this to send its join message
 
-## 21 Revisions
+## 22 Revisions
 
 ### 21.1 Revision 1.0
 
-- Draft version of LoRaWAN
+- Approved version of LoRaWAN1.0
 
-## 22 Glossary
+### 22.2 Revision 1.0.1
+
+- Clarified the RX window start time definition
+- Corrected  the maximum payload size for DR2 in the NA section
+- Corrected the typo on the downlink data rate range in 7.2.2
+- Introduced a requirement for using coding rate 4/5 in 7.2.2 to guarantee a maximum time on air < 400mSec
+- Corrected the JoinAccept MIC calculation in 6.2.5
+- Clarified the NbRep field and renamed it to NbTrans in 5.2
+- Removed the possibility to not encrypt the Applicative payload in the MAC layer , removed the paragraph 4.3.3.2. If further security is required by the application , the payload will be encrypted, using any method, at the application layer then reencrypted at the MAC layer using the specified default LoRaWAN encryption
+- Corrected FHDR field size typo
+- Corrected the channels impacted by ChMask when chMaskCntl equals 6 or 7 in 7.2.5
+- Clarified 6.2.5 sentence describing the RX1 slot data rate offset in the JoinResp message
+- Removed the second half of the DRoffset table in 7.2.7 , as DR>4 will never be used for uplinks by definition
+- Removed explicit duty cycle limitation implementation in the EU868Mhz ISM band (chapter7.1)
+- Made the RXtimingSetupAns and RXParamSetupAns sticky MAC commands to avoid end-device's hidden state problem. (in 5.4 and 5.7)
+- Added a frequency plan for the Chinese 470-510MHz metering band
+- Added a frequency plan for the Australian 915-928MHz ISM band
+
+## 23 Glossary
 
 |Acronym|Meaning|
 |---|---|
@@ -2508,15 +2526,15 @@ End-devices that can be activated in territories that are using different freque
 |Tx|Transmitter|
 |USB|Universal Serial Bus|
 
-## 23 Bibliography
+## 24 Bibliography
 
-### 23.1 References
+### 24.1 References
 
 \[IEEE802154\]: IEEE Standard for Local and Metropolitan Area Networks---Part 15.4: Low Rate Wireless Personal Area Networks (LR-WPANs), IEEE Std 802.15.4TM-2011 (Revision of IEEE Std 802.15.4-2006), September 2011.
 
 \[RFC4493\]: The AES-CMAC Algorithm, June 2006.
 
-## 24 NOTICE OF USE AND DISCLOSURE
+## 25 NOTICE OF USE AND DISCLOSURE
 
 Copyright © LoRa Alliance, Inc. (2015). All Rights Reserved.
 
