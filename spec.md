@@ -1694,11 +1694,175 @@ The following parameters are recommended values for the AU915-928 band.
 
 If the actual parameter values implemented in the end-device are different from those default values (for example the end-device uses a longer RECEIVE_DELAY1 & 2 latency), those parameters must be communicated to the network server using an out-of-band channel during the end-device commissioning process. The network server may not accept parameters different from those default values.
 
+### 7.6 CN 470-510MHz Band
 
+#### 7.6.1 CN470-510 Preamble Format
+
+The following synchronization words should be used:
+
+|Modulation|Sync word|Preamble length|
+|---|---|---|
+LORA|0x34|8 symbols|
+
+#### 7.6.2 CN470-510 Channel Frequencies
+
+In China, this band is defined by SRRC to be used for civil metering applications.
+
+The 470 MHz ISM Band shall be divided into the following channel plans:
+
+- Upstream – 96 channels numbered 0 to 95 utilizing LoRa 125 kHz BW varying from
+- DR0 to DR5, using coding rate 4/5, starting at 470.3 MHz and incrementing linearly by 200 kHz to 489.3 MHz.
+
+![china channels](figure14.png)
+
+**Figure 12: CN470-510 channel frequencies**
+
+AU ISM band end-devices should use the following default parameters:
+
+The LoRaWAN can be used in the Chinese 470-510MHz band as long as
+
+- The radio device EIRP is less than 50mW (or 17dBm).
+- The transmission never lasts more than 5000 ms.
+
+CN470 MHz band end-devices should use the following default parameters:
+
+- Default radiated transmits output power: 14 dBm.
+
+CN470-510 end-devices should be capable of operating in the 470 to 510 MHz frequency band and should feature a channel data structure to store the parameters of 96 uplink channels. A channel data structure corresponds to a frequency and a set of data rates usable on this frequency.
+
+If using the over-the-air activation procedure, the end-device should broadcast the JoinReq message on a random 125 kHz channel amongst the 96 uplink channels defined using **DR5 to DR0**.  
+Personalized devices shall have all 96 channels enabled following a reset.
+
+#### 7.6.3 CN470-510 Data Rate and End-point Output Power encoding
+
+The following encoding is used for Data Rate (**DR**) and End-point Output Power (**TXPower**) in the AU915-928 band:
+ 
+|DataRate|Configuration|Indicative physical bit rate [bit/sec]|
+|---|---|---|
+|0|LoRa: SF12 / 125 kHz|250|
+|1|LoRa: SF11 / 125 kHz|440|
+|2|LoRa: SF10 / 125 kHz|980|
+|3|LoRa: SF9 / 125 kHz|1760|
+|4|LoRa: SF8 / 125 kHz|3125|
+|4|LoRa: SF7 / 125 kHz|5470|
+|6:15|RFU||
+
+**Table 44: CN470 Data rate table**
+
+|TXPower|Configuration|
+|---|---|
+|0|17 dBm|
+|1|16 dBm|
+|2|14 dBm|
+|3|12 dBm|
+|4|10 dBm|
+|5|7 dBm|
+|6|5 dBm|
+|7|2 dBm|
+|8:15|RFU|
+
+**Table 45 : CN470 TX power table**
+
+DR4 is identical to DR12, DR8...13 must be implemented in end-devices and are reserved for future applications.
+
+#### 7.6.4 CN470-510 JoinResp CFList
+
+The CN470-510 LoRaWAN does not support the use of the optional **CFlist** appended to the 13 JoinAccept message. If the CFlist is not empty it is ignored by the end-device.
+
+#### 7.6.5 CN470-510 LinkAdrReq command
+
+For the AU915-928 version the ChMaskCntl field of the LinkADRReq command has the following meaning:
+
+|ChMaskCntl|ChMask applies to|
+|---|---|
+|0|Channels 0 to 15|
+|1|Channels 16 to 31|
+|1|Channels 32 to 47|
+|1|Channels 48 to 63|
+|4|Channels 64 to 79|
+|4|Channels 80 to 95|
+|6|All channels ON The device should enable all currently defined channels independently of the ChMask field value.|
+|7|RFU|
+
+**Table 45: CN470 ChMaskCntl value table**
+
+If the ChMask field value is one of the values meaning RFU, then end-device should reject the command and unset the **Channel mask ACK** bit in its response.
+
+#### 7.6.6 CN470-510 Maximum payload size
+
+The maximum **MACPayload** size length (M) is given by the following table. It is derived from the maximum allowed transmission time at the PHY layer taking into account a possible repeater encapsulation. The maximum application payload length in the absence of the optional **FOpt** MAC control field (N) is also given for information only. The value of N might be smaller if the **FOpt** field is not empty:
+
+|DataRate|M|N|
+|---|---|---|
+|0|59|51|
+|1|59|51|
+|2|59|51|
+|3|123|115|
+|4|230|222|
+|5|230|222|
+|6:15|Not defined|Not defined|
+
+**Table 41: CN470-510 maximum payload size**
+
+#### 7.6.7 CN470-510 Receive windows
+
+- The RX1 receive channel is a function of the upstream channel used to initiate the data exchange. The RX1 receive channel can be determined as follows. o RX1 Channel Number = Uplink Channel Number modulo 48, for example, when transmitting channel number is 49, the rx1 channel number is 1.
+- The RX1 window data rate depends on the transmit data rate (see Table Table 47: CN470-510 Data rate offset below).
+- The RX2 (second receive window) settings uses a fixed data rate and frequency. Default parameters are 505.3 MHz / DR0
+
+|Upstream data rate|Downstream data rate in RX1 slot|Downstream data rate in RX1 slot|Downstream data rate in RX1 slot|Downstream data rate in RX1 slot|Downstream data rate in RX1 slot|Downstream data rate in RX1 slot|
+|---|---|---|---|---|---|---|
+|RX1DROffset|0|1|2|3||4|5
+|DR0|DR0|DR0|DR0|DR0|DR0|DR0|
+|DR1|DR1|DR0|DR0|DR0|DR0|DR0|
+|DR2|DR2|DR1|DR0|DR0|DR0|DR0|
+|DR3|DR3|DR2|DR1|DR0|DR0|DR0|
+|DR4|DR4|DR3|DR2|DR1|DR0|DR0|
+|DR5|DR5|DR4|DR3|DR2|DR1|DR0|
+**Table 47: CN470-510 Data rate offset**
+
+The allowed values for RX1DROffset are in the [0:3] range. Values in the range [4:7] are reserved for future use.
+
+#### 7.6.8 CN470-510 Default Settings
+
+The following parameters are recommended values for the CN470-510 band.
+|Variable name|Variable value|
+|---|---|
+|RECEIVE_DELAY1|1 s|
+|RECEIVE_DELAY2|2 s (must be RECEIVE_DELAY1 + 1s)|
+|JOIN_ACCEPT_DELAY1|5 s|
+|JOIN_ACCEPT_DELAY2|6 s|
+|MAX_FCNT_GAP|16384|
+|ADR_ACK_LIMIT|64|
+|ADR_ACK_DELAY|32|
+|ACK_TIMEOUT|2 +/- 1 s (random delay between 1 and 3 seconds)|
+
+If the actual parameter values implemented in the end-device are different from those default values (for example the end-device uses a longer RECEIVE_DELAY1 & 2 latency), those parameters must be communicated to the network server using an out-of-band channel during the end-device commissioning process. The network server may not accept parameters different from those default values.
+
+## 8 Retransmissions back-off
+
+Uplink frames that:
+- Require an **acknowledgement or an anwser** by the network or an application server, and are **retransmitted** by the device if the acknowledgement or answer is not received. 
+
+and
+
+- can be triggered by an **external** event causing **synchronization** across a large (>100) number of devices (power outage, radio jamming, network outage, earthquake…) can trigger a catastrophic, self-persisting, radio network overload situation.
+
+> Note: An example of such uplink frame is typically the JoinRequest if the implementation of a group of end-devices decides to reset the MAC layer in the case of a network outage.  
+The whole group of end-device will start broadcasting JoinRequest uplinks and will only stops when receiving a JoinResponse from the network.
+
+For those frame retransmissions, the interval between the end of the RX2 slot and the next uplink retransmission shall be random and follow a different sequence for every device (For example using a pseudo-random generator seeded with the device’s address) .The transmission duty-cycle of such message shall respect the local regulation and the following limits, whichever is more constraining:
+
+|Aggregated during the first hour following power-up or reset|T0<t<T0+1|Transmit time < 36Sec|
+|---|---|---|
+Aggregated during the next 10 hours|T0+1<t<T0+11|Transmit time < 36Sec|
+|After the first 11 hours , aggregated over 24h|T0+11+N<t<T0+35+N N>=0|Transmit time < 8.7Sec per 24h|
 
 ## CLASS B -- BEACON
 
 ---
+
+Class B must be considered as experimental in this version of the specification
 
 ## 8 Introduction to Class B
 
