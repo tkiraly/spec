@@ -1068,8 +1068,8 @@ The following encoding is used for Data Rate (**DR**) and End-point Output Power
 |0|LoRa: SF10 / 125kHz|980|
 |1|LoRa: SF9 / 125kHz|1760|
 |2|LoRa: SF8 / 125kHz|3125|
-|3|LoRa: SF7 / 500kHz|5470|
-|4|LoRa: SF8 / 125kHz|12500|
+|3|LoRa: SF7 / 125kHz|5470|
+|4|LoRa: SF8 / 500kHz|12500|
 |5:7|RFU|
 |8|LoRa: SF12 / 500kHz|980|
 |9|LoRa: SF11 / 500kHz|1760|
