@@ -1538,7 +1538,7 @@ The following synchronization words should be used:
 |---|---|---|
 LORA|0x34|8 symbols|
 
-LoRaWAN does not make use of GFSK modulation in the AU915-928 ISM band. 
+LoRaWAN does not make use of GFSK modulation in the AU915-928 ISM band.
 
 #### 7.5.2 AU915-928 Channel Frequencies
 
@@ -1567,7 +1567,7 @@ Personalized devices shall have all 72 channels enabled following a reset.
 #### 7.5.3 AU915-928 Data Rate and End-point Output Power encoding
 
 The following encoding is used for Data Rate (**DR**) and End-point Output Power (**TXPower**) in the AU915-928 band:
- 
+
 |DataRate|Configuration|Indicative physical bit rate [bit/sec]|
 |---|---|---|
 |0|LoRa: SF10 / 125 kHz|980|
@@ -1744,7 +1744,7 @@ Personalized devices shall have all 96 channels enabled following a reset.
 #### 7.6.3 CN470-510 Data Rate and End-point Output Power encoding
 
 The following encoding is used for Data Rate (**DR**) and End-point Output Power (**TXPower**) in the CN470-510 band:
- 
+
 |DataRate|Configuration|Indicative physical bit rate [bit/sec]|
 |---|---|---|
 |0|LoRa: SF12 / 125 kHz|250|
