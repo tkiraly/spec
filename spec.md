@@ -1588,7 +1588,7 @@ The following encoding is used for Data Rate (**DR**) and End-point Output Power
 |---|---|
 |0|30 dBm - 2*TXpower|
 |1|28 dBm|
-|2 	|26 dBm|
+|2|26 dBm|
 |3 : 9|...|
 |10|10 dBm|
 |11:15|RFU|
