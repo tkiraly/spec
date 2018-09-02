@@ -1051,8 +1051,8 @@ The 915 MHz ISM Band shall be divided into the following channel plans.
 915 MHz ISM band end-devices should use the following default parameters:
 
 - Default radiated transmit output power: 20 dBm
-  - Devices, when transmitting with 125 kHz BW may use a maximum of +30 dBm. The transmission should never last more than 400 ms.|
-  - Devices, when transmitting with 500 kHz BW may use a maximum of +26 dBm|
+  - Devices, when transmitting with 125 kHz BW may use a maximum of +30 dBm. The transmission should never last more than 400 ms.
+  - Devices, when transmitting with 500 kHz BW may use a maximum of +26 dBm
 
 US902-928 end-devices should be capable of operating in the 902 to 928 MHz frequency  band and should feature a channel data structure to store the parameters of 72 channels. A  channel data structure corresponds to a frequency and a set of data rates usable on this  frequency.
 
