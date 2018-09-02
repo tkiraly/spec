@@ -1712,8 +1712,11 @@ In China, this band is defined by SRRC to be used for civil metering application
 
 The 470 MHz ISM Band shall be divided into the following channel plans:
 
-- Upstream – 96 channels numbered 0 to 95 utilizing LoRa 125 kHz BW varying from
-- DR0 to DR5, using coding rate 4/5, starting at 470.3 MHz and incrementing linearly by 200 kHz to 489.3 MHz.
+- Upstream – 96 channels numbered 0 to 95 utilizing LoRa 125 kHz BW varying fromDR0 to DR5, using coding rate 4/5, starting at 470.3 MHz and incrementing linearly by 200 kHz to 489.3 MHz
+
+> Channel Index 6 to 38 and 45 to 77 are mainly used by China Electric Power. In the areas where these channels are used by China Electric Power, they should be disabled.
+
+- Downstream – 48 channels numbered 0 to 47 utilizing LoRa 125 kHz BW varying from DR0 to DR5, using coding rate 4/5, starting at 500.3 MHz and incrementing linearly by 200 kHz to 509.7 MHz
 
 ![china channels](figure14.png)
 
