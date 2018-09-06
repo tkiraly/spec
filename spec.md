@@ -1,6 +1,6 @@
 # **LoRaWAN Specification**
 
-Copyright © (2015, 2016) LoRa Alliance, Inc. All rights reserved.
+Copyright © (2017) LoRa Alliance, Inc. All rights reserved.
 
 NOTICE OF USE AND DISCLOSURE
 ---
@@ -18,8 +18,7 @@ IN NO EVENT WILL THE ALLIANCE BE LIABLE FOR ANY LOSS OF PROFITS, LOSS OF BUSINES
 The above notice and this paragraph must be included on all copies of this document that are made.
 
 LoRa Alliance, Inc.  
-2400 Camino Ramon, Suite 375  
-San Ramon, CA 94583
+3855 SW 153rd Drive 33 Beaverton, OR  97007
 
 *Note: All Company, brand and product names may be trademarks that are the sole property of their respective owners.*
 
@@ -27,14 +26,18 @@ The authors reserve the right to change
 
 LoRaWAN™ Specification
 
-**Authors**:  
-N. Sornin (Semtech), M. Luis (Semtech), T. Eirich (IBM), T. Kramp (IBM), O.Hersent (Actility)
+**Chairs**:
+N.Sornin (Semtech), A.YEGIN(Actility)
 
-**Version**: V1.0.2  
-**Date**: 2016 July  
-**Status:** Final
+**Editor:**
+N.SORNIN(Semtech)
 
-> **Important note:** This is a candidate specification for the LoRa™ Alliance protocol named LoRaWAN™.
+**Contributors:**
+A.BERTOLAUD (Gemalto), J.CATALANO (Kerlink), J.DELCLEF (ST Microelectronics), V.DELPORT (Microchip Technology), P.DUFFY (Cisco), F.DYDUCH (Bouygues Telecom), T.EIRICH (TrackNet), L.FERREIRA (Orange), S.GHAROUT(Orange), O.HERSENT (Actility), A.KASTTET (Homerider Systems), D.KJENDAL (Senet), V.KLEBAN (Everynet), J.KNAPP (TrackNet), T.KRAMP (TrackNet), M.KUYPER (TrackNet), P.KWOK (Objenious), M.LEGOURIEREC (Sagemcom), C.LEVASSEUR (Bouygues Telecom), M.LUIS (Semtech), M.PAULIAC (Gemalto), P.PIETRI (Orbiwise), D.SMITH (MultiTech), R.SOSS(Actility), T.TASHIRO (M2B Communications), P.THOMSEN (Orbiwise), A.YEGIN (Actility)
+
+**Version**: V1.0.3  
+**Date**: March 20, 2018  
+**Status:** Final release
 
 ## 1 Introduction
 
