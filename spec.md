@@ -43,7 +43,7 @@ A.BERTOLAUD (Gemalto), J.CATALANO (Kerlink), J.DELCLEF (ST Microelectronics), V.
 
 ## 1 Introduction
 
-This document describes the LoRaWAN™ network protocol which is optimized for batterypowered end-devices that may be either mobile or mounted at a fixed location.
+This document describes the LoRaWAN™ network protocol which is optimized for battery powered end-devices that may be either mobile or mounted at a fixed location.
 
 LoRaWAN networks typically are laid out in a star-of-stars topology in which **gateways**<sup>[1](#fn1)</sup> relay messages between **end-devices**<sup>[2](#fn2)</sup> and a central **network server** at the backend. Gateways are connected to the network server via standard IP connections while enddevices use single-hop LoRa™ or FSK communication to one or many gateways.<sup>[3](#fn3)</sup> All communication is generally bi-directional, although uplink communication from an enddevice to the network server is expected to be the predominant traffic.
 
@@ -58,7 +58,7 @@ End-devices may transmit on any channel available at any time, using any availab
 
 - The end-device respects the maximum transmit duration (or dwell time) relative to the sub-band used and local regulations.
 
-> **Note:** While this document specifies the protocol details, various operational parameters that are based on the regional regulations, such as  Maximum transmit duty-cycle and dwell time per sub-band are region specific and are described in a separate document (LoRaWAN Regional Parameters [PARAMS]). This document separation allows addition of new regional parameters without having to modify the base protocol specification. .
+> **Note:** Maximum transmit duty-cycle and dwell time per sub-band are region specific and are defined in the LoRaWAN regional phyLayer definition document.
 
 <a name="fn1">1</a>: Gateways are also known as **concentrators** or **base stations**.  
 <a name="fn2">2</a>: End-devices are also known as **motes**.  
@@ -160,11 +160,11 @@ Following each uplink transmission the end-device opens two short receive window
 
 #### 3.3.1 First receive window channel, data rate, and start
 
-The first receive window RX1 uses a frequency that is a function of the uplink frequency and a data rate that is a function of the data rate used for the uplink. RX1 opens RECEIVE\_DELAY1<sup>[1](#fn7)</sup> seconds (+/- 20 microseconds) after the end of the uplink modulation. The relationship between uplink and RX1 slot downlink data rate is region specific and detailed in the LoRaWAN Regional Parameters document [PARAMS]. By default the first receive window datarate is identical to the datarate of the last uplink.
+The first receive window RX1 uses a frequency that is a function of the uplink frequency and a data rate that is a function of the data rate used for the uplink. RX1 opens RECEIVE\_DELAY1<sup>[1](#fn7)</sup> seconds (+/- 20 microseconds) after the end of the uplink modulation. The relationship between uplink and RX1 slot downlink data rate is region specific and detailed in the "LoRaWAN Regional physical layer specification" document. By default the first receive window datarate is identical to the datarate of the last uplink.
 
 #### 3.3.2 Second receive window channel, data rate, and start
 
-The second receive window RX2 uses a fixed configurable frequency and data rate and opens RECEIVE\_DELAY2<sup>[1](#fn7)</sup> seconds (+/- 20 microseconds) after the end of the uplink modulation. The frequency and data rate used can be modified through MAC commands (see Section 5).The default frequency and data rate to use are region specific and detailed in the LoRaWAN Regional Parameters document [PARAMS].
+The second receive window RX2 uses a fixed configurable frequency and data rate and opens RECEIVE\_DELAY2<sup>[1](#fn7)</sup> seconds (+/- 20 microseconds) after the end of the uplink modulation. The frequency and data rate used can be modified through MAC commands (see Section 5).The default frequency and data rate to use are region specific and detailed in the LoRaWAN physical layer specification document.
 
 <a name="fn7">1</a>: RECEIVE_DELAY1 and RECEIVE_DELAY2 are described in Chapter 6.
 
@@ -228,6 +228,7 @@ All LoRa uplink and downlink messages carry a PHY payload (**Payload**) starting
 |**Size (bytes)**|1|1..*M*|4|
 |---|---|---|---|
 |**PHYPayload**|MHDR|MACPayload|MIC|
+**Table 1: PHY payload format**
 
 The maximum length (*M*) of the **MACPayload** field is region specific and is specified in Chapter 6.
 
@@ -254,7 +255,7 @@ The LoRaWAN distinguishes between six different MAC message types: **join reques
 |110|RFU|
 |111|Proprietary|
 
-**Table 1: MAC message types**
+**Table 2: MAC message types**
 
 ##### 4.2.1.1 Join-request and join-accept messages
 
@@ -275,7 +276,7 @@ Message integrity is ensured in different ways for different message types and i
 |00|LoRaWAN R1|
 |01..11|RFU|
 
-**Table 2: Major list**
+**Table 3: Major list**
 
 > **Note:** The Major version specifies the format of the messages exchanged in the join procedure (see Chapter 6.2) and the first four bytes of the MAC Payload as described in Chapter 4. For each major version, end-devices may implement different minor versions of the frame format. The minor version used by an end-device must be made known to the network server beforehand using out of band messages (e.g., as part of the device personalization information).
 
@@ -301,7 +302,7 @@ For uplink frames the FCtrl content of the frame header is:
 
 |**Bit\#**|7|6|5|4|[3..0]|
 |---|---|---|---|---|---|
-|**FCtrl bits**|ADR|ADRACKReq|ACK|RFU|FOptsLen|
+|**FCtrl bits**|ADR|ADRACKReq|ACK|ClassB|FOptsLen|
 
 ##### 4.3.1.1 Adaptive data rate control in frame header (ADR, ADRACKReq in FCtrl)
 
@@ -380,7 +381,7 @@ The test protocol, running at application layer, is defined outside of the LoRaW
 |---|---|---|---|
 |**MACPayload**|FHDR|FPort|FRMPayload|
 
-*N* is the number of octets of the application payload. The valid range for *N* is region specific and is defined in the LoRaWAN Regional Parameters document [PARAMS].
+*N* is the number of octets of the application payload. The valid range for *N* is region specific and is defined in the "LoRaWAN Regional physical layer specification" document.
 
 *N* should be equal or smaller than:
 
@@ -398,7 +399,7 @@ The encryption scheme used is based on the generic algorithm described in IEEE  
 |---|---|
 |0|NwkSKey|
 |1..255|AppSKey|
-**Table 3: FPort list**
+**Table 4: FPort list**
 
 The fields encrypted are:
 
