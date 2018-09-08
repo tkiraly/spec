@@ -1,11 +1,11 @@
-# **LoRaWAN Specification**
+# **LoRaWAN™ 1.0.3 Specification**
 
-Copyright © (2017) LoRa Alliance, Inc. All rights reserved.
+Copyright © (2018) LoRa Alliance, Inc. All rights reserved.
 
 NOTICE OF USE AND DISCLOSURE
 ---
 
-Copyright © LoRa Alliance, Inc. (2016). All Rights Reserved.
+Copyright © LoRa Alliance, Inc. (2017). All Rights Reserved.
 
 The information within this document is the property of the LoRa Alliance ("The Alliance") and its use and disclosure are subject to LoRa Alliance Corporate Bylaws, Intellectual Property Rights (IPR) Policy and Membership Agreements.
 
@@ -24,15 +24,17 @@ LoRa Alliance, Inc.
 
 The authors reserve the right to change
 
-LoRaWAN™ Specification
+LoRaWAN™ 1.0.3 Specification
 
-**Chairs**:
+Authored by the LoRa Alliance Technical Committee
+
+**Chairs**:  
 N.Sornin (Semtech), A.YEGIN(Actility)
 
-**Editor:**
+**Editor**:  
 N.SORNIN(Semtech)
 
-**Contributors:**
+**Contributors:**  
 A.BERTOLAUD (Gemalto), J.CATALANO (Kerlink), J.DELCLEF (ST Microelectronics), V.DELPORT (Microchip Technology), P.DUFFY (Cisco), F.DYDUCH (Bouygues Telecom), T.EIRICH (TrackNet), L.FERREIRA (Orange), S.GHAROUT(Orange), O.HERSENT (Actility), A.KASTTET (Homerider Systems), D.KJENDAL (Senet), V.KLEBAN (Everynet), J.KNAPP (TrackNet), T.KRAMP (TrackNet), M.KUYPER (TrackNet), P.KWOK (Objenious), M.LEGOURIEREC (Sagemcom), C.LEVASSEUR (Bouygues Telecom), M.LUIS (Semtech), M.PAULIAC (Gemalto), P.PIETRI (Orbiwise), D.SMITH (MultiTech), R.SOSS(Actility), T.TASHIRO (M2B Communications), P.THOMSEN (Orbiwise), A.YEGIN (Actility)
 
 **Version**: V1.0.3  
