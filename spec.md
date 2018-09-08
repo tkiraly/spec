@@ -449,7 +449,7 @@ The direction field (**Dir**) is 0 for uplink frames and 1 for downlink frames.
 
 ## 5 MAC Commands
 
-For network administration, a set of MAC commands may be exchanged exclusively between the network server and the MAC layer on an end-device. MAC layer commands are never visible to the application or the application server or the application running on the end-device.
+For network administration, a set of MAC commands can be exchanged exclusively between the network server and the MAC layer on an end-device. MAC layer commands are never visible to the application or the application server or the application running on the end-device.
 
 A single data frame can contain any sequence of MAC commands, either piggybacked in the **FOpts** field or, when sent as a separate data frame, in the **FRMPayload** field with the **FPort** field being set to 0. Piggybacked MAC commands are always sent without encryption and must not exceed 15 octets. MAC commands sent as **FRMPayload** are always encrypted and must not exceed the maximum **FRMPayload** length.
 
@@ -475,9 +475,13 @@ followed by a possibly empty command-specific sequence of octets.
 |0x08|**RXTimingSetupReq**||x|Sets the timing of the of the reception slots|
 |0x08|**RXTimingSetupAns**|x||Acknowledges RXTimingSetupReq command|
 0x09|**TxParamSetupReq**||x|Used by the network server to set the maximum allowed dwell time and Max EIRP of end-device, based on local regulations|
-0x09|**TxParamSetupAns**|x||Acknowledges TxParamSetupReq command|
-0x0A|**DlChannelReq**||x|Modifies the definition of a downlink RX1 radio channel by shifting the downlink frequency from the uplink frequencies (i.e. creating an asymmetric channel)|
-0x0A|**DlChannelAns**|x||Acknowledges DlChannelReq command|
+|0x09|**TxParamSetupAns**|x||Acknowledges TxParamSetupReq command|
+|0x0A|**DlChannelReq**||x|Modifies the definition of a downlink RX1 radio channel by shifting the downlink frequency from the uplink frequencies (i.e. creating an asymmetric channel)|
+|0x0A|**DlChannelAns**|x||Acknowledges DlChannelReq command|
+|0x0B to 0x0C|RFU||||
+|0x0D|**DeviceTimeReq**|x||Used by an end-device to request the current date and time|
+|0x0D|**DeviceTimeAns**||x|Sent by the network, answer to the DeviceTimeReq request|
+|0x0E to 0x7F|RFU||||
 |0x80 to 0xFF|**Proprietary**|x|x|Reserved for proprietary network command extensions|
 
 **17 Table 4: MAC commands**
@@ -512,7 +516,7 @@ With the **LinkADRReq** command, the network server requests an end-device to pe
 |---|---|---|
 |**DataRate\_TXPower**|DataRate|TXPower|
 
-The requested date rate (**DataRate**) and TX output power (**TXPower**) are region-specific and are encoded as indicated in the LoRaWAN Regional Parameters document [PARAMS].The TX output power indicated in the command is to be considered the maximum transmit power the device may operate at.  An end-device will acknowledge as successful a command which specifies a higher transmit power than it is capable of using and should, in that case, operate at its maximum possible power. The channel mask (**ChMask**) encodes the channels usable for uplink access as follows with bit 0 corresponding to the LSB:
+The requested date rate (**DataRate**) and TX output power (**TXPower**) are region-specific and are encoded as indicated in the "LoRaWAN Regional physical layer specification" document. The TX output power indicated in the command is to be considered the maximum transmit power the device may operate at.  An end-device will acknowledge as successful a command which specifies a higher transmit power than it is capable of using and should, in that case, operate at its maximum possible power. The channel mask (**ChMask**) encodes the channels usable for uplink access as follows with bit 0 corresponding to the LSB:
 
 |**Bit\#**|**Usable channels**|
 |---|---|
@@ -521,7 +525,7 @@ The requested date rate (**DataRate**) and TX output power (**TXPower**) are reg
 |..|..|
 |15|Channel 16|
 
-**Table 5: Channel state table**
+**Table 6: Channel state table**
 
 A bit in the **ChMask** field set to 1 means that the corresponding channel can be used for  uplink transmissions if this channel allows the data rate currently used by the end-device. A  bit set to 0 means the corresponding channels should be avoided.
 
@@ -532,7 +536,7 @@ A bit in the **ChMask** field set to 1 means that the corresponding channel can 
 In the Redundancy bits the **NbTrans** field is the number of transmissions for each uplink message. This applies only to "unconfirmed" uplink frames. The default value is 1 corresponding to a single transmission of each frame. The valid range is \[1:15\]. If **NbTrans**==0 is received the end-device should use the default value. This field can be used by the network manager to control the redundancy of the node uplinks to obtain a given Quality of Service. The end-device performs frequency hopping as usual between repeated transmissions, it does wait after each repetition until the receive windows have expired.  
 Whenever a downlink message is received during the RX1 slot window, it shall stop any further retransmission of the same uplink message. For class A devices, a reception in the RX2 slot has the same effect.
 
-The channel mask control (**ChMaskCntl**) field controls the interpretation of the previously defined **ChMask** bit mask. This field will only be non-zero values in networks where more than 16 channels are implemented. It controls the block of 16 channels to which the **ChMask** applies. It can also be used to globally turn on or off all channels using specific modulation. This field usage is region specific and is defined in the LoRaWAN Regional Parameters document [PARAMS]. The network server may include multiple LinkAdrReq commands within a single downlink message. For the purpose of configuring the end-device channel mask, the end-device will process all contiguous LinkAdrReq messages, in the order present in the downlink message, as a single atomic block command.  The end-device will accept or reject all Channel Mask controls in the contiguous block, and provide consistent Channel Mask ACK status indications for each command in the contiguous block in each LinkAdrAns message, reflecting the acceptance or rejection of this atomic channel mask setting.  The device will only process the DataRate, TXPower and NbTrans from the last message in the contiguous block, as these settings govern the end-device global state for these values. The enddevice will provide consistent ACK status in each LinkAdrAns message reflecting the acceptance or rejection of these final settings.
+The channel mask control (**ChMaskCntl**) field controls the interpretation of the previously defined **ChMask** bit mask. This field will only be non-zero values in networks where more than 16 channels are implemented. It controls the block of 16 channels to which the **ChMask** applies. It can also be used to globally turn on or off all channels using specific modulation. This field usage is region specific and is defined in the "LoRaWAN Regional physical layer specification" document. The network server may include multiple LinkAdrReq commands within a single downlink message. For the purpose of configuring the end-device channel mask, the end-device will process all contiguous LinkAdrReq messages, in the order present in the downlink message, as a single atomic block command.  The end-device will accept or reject all Channel Mask controls in the contiguous block, and provide consistent Channel Mask ACK status indications for each command in the contiguous block in each LinkAdrAns message, reflecting the acceptance or rejection of this atomic channel mask setting.  The device will only process the DataRate, TXPower and NbTrans from the last message in the contiguous block, as these settings govern the end-device global state for these values. The enddevice will provide consistent ACK status in each LinkAdrAns message reflecting the acceptance or rejection of these final settings.
 
 The channel frequencies are region-specific and they are defined in Chapter 6. An enddevice answers to a ***LinkADRReq*** with a ***LinkADRAns*** command.
 
@@ -552,7 +556,7 @@ The ***LinkADRAns*** **Status** bits have the following meaning:
 |**Data rate ACK**|The data rate requested is unknown to the end-device or is not possible given the channel mask provided (not supported by any of the enabled channels). The command was discarded and the end-device state was not changed.|The data rate was successfully set.|
 |**Power ACK**|The requested power level is not implemented in the device. The command was discarded and the end- device state was not changed.|The power level was successfully set.|
 
-**Table 6: LinkADRAns status bits signification**
+**Table 7: LinkADRAns status bits signification**
 
 If any of those three bits equals 0, the command did not succeed and the node has kept the previous state.
 
@@ -610,7 +614,7 @@ The status (**Status**) bits have the following meaning.
 |**RX2 Data rate ACK**|The data rate requested is unknown to the end-device.|RX2 slot data rate was successfully set|
 |**RX1DRoffset ACK**|the uplink/downlink data rate offset for RX1 slot is not in the allowed range|RX1DRoffset was successfully set|
 
-**Table 7: RX2SetupAns status bits signification**
+**Table 8: RX2SetupAns status bits signification**
 
 If either of the 3 bits is equal to 0, the command did not succeed and the previous parameters are kept.
 
@@ -630,7 +634,7 @@ The battery level (**Battery**) reported is encoded as follows:
 |1..254|The battery level, 1 being at minimum and 254 being at maximum|
 |255|The end-device was not able to measure the battery level.|
 
-**Table 8: Battery level decoding**
+**Table 9: Battery level decoding**
 
 The margin (**Margin**) is the demodulation signal-to-noise ratio in dB rounded to the nearest  integer value for the last successfully received ***DevStatusReq*** command. It is a signed integer of 6 bits with a minimum value of -32 and a maximum value of 31.
 
@@ -686,11 +690,11 @@ The status (**Status**) bits have the following meaning:
 |**Data rate range ok**|The designated data rate range exceeds the ones currently defined for this end- device|The data rate range is compatible with the possibilities of the end- device|
 |**Channel frequency ok**|The device cannot use this frequency|The device is able to use this frequency.|
 
-**Table 9: NewChannelAns status bits signification**
+**Table 10: NewChannelAns status bits signification**
 
 If either of those 2 bits equals 0, the command did not succeed and the new channel has not been created.
 
-The DlChannelReq command allows the network to associate a different downlink frequency to the RX1 slot. This command is applicable for all the geographic regions supporting the NewChannelReq command (for example EU and China, but not for US or Australia as described in the LoRaWAN Regional Parameters document [PARAMS]).
+The ***DlChannelReq*** command allows the network to associate a different downlink frequency to the RX1 slot. This command is applicable for all the physical layer specifications supporting the ***NewChannelReq*** command (for example EU and China physical layers, but not for US or Australia). In regions where that command is not defined, the device SHALL silently drop it.
 
 The command sets the center frequency used for the downlink RX1 slot, as follows:
 |**Size (bytes)**|1|3|
@@ -701,7 +705,7 @@ The channel index (**ChIndex**) is the index of the channel whose downlink frequ
 
 The frequency (**Freq**) field is a 24 bits unsigned integer. The actual downlink frequency in Hz is 100 x **Freq** whereby values representing frequencies below 100 MHz are reserved for future use. The end-device has to check that the frequency is actually allowed by its radio hardware and return an error otherwise.
 
-The end-device acknowledges the reception of a ***DlChannelReq*** by sending back a ***DlChannelAns*** command. The ***DlChannelAns*** command shall be added in the FOpt field of all uplinks until a downlink packet is received by the end-device. This guarantees that even in presence of uplink packet loss, the network is always aware of the downlink frequencies used by the end-device.
+If the ***DlChannelReq*** command is defined in the region where the end-device is operating, The end-device acknowledges the reception of a ***DlChannelReq*** by sending back a ***DlChannelAns*** command. The ***DlChannelAns*** command shall be added in the FOpt field of all uplinks until a downlink packet is received by the end-device. This guarantees that even in presence of uplink packet loss, the network is always aware of the downlink frequencies used by the end-device.
 
 The payload of this message contains the following information:
 
@@ -719,7 +723,9 @@ The status (**Status**) bits have the following meaning:
 |---|---|---|
 Channel frequency ok|The device cannot use this frequency|The device is able to use this frequency.|
 |Uplink frequency exists|The uplink frequency is not defined for this channel , the downlink frequency can only be set for a channel that already has a valid uplink frequency|The uplink frequency of the channel is valid|
-**Table 10: DlChannelAns status bits signification**
+**Table 11: DlChannelAns status bits signification**
+
+If either of those 2 bits equals 0, the command did not succeed and the RX1 slot channel frequency has not been updated.
 
 ### 5.7 Setting delay between TX and RX (*RXTimingSetupReq*, *RXTimingSetupAns*)
 
@@ -746,13 +752,13 @@ The delay is expressed in seconds. **Del** 0 is mapped on 1 s.
 |..|..|
 |15|15|
 
-**Table 11: Del mapping table**
+**Table 12: Del mapping table**
 
 An end device answers ***RXTimingSetupReq*** with ***RXTimingSetupAns*** with no payload. The ***RXTimingSetupAns*** command should be added in the FOpt field of all uplinks until a class A downlink is received by the end-device. This guarantees that even in presence of uplink packet loss, the network is always aware of the downlink parameters used by the end-device.
 
 ### 5.8 End-device transmission parameters (*TxParamSetupReq*, *TxParamSetupAns*)
 
-This MAC command only needs to be implemented for compliance in certain regulatory regions. Please refer to the LoRaWAN Regional Parameters [PARAMS] document.
+This MAC command only needs to be implemented for compliance in certain regulatory regions. Please refer to the "LoRaWAN physical layer definitions" document.
 
 The ***TxParamSetupReq*** command can be used to notify the end-device of the maximum allowed dwell time, i.e. the maximum continuous transmission time of a packet over the air, as well as the maximum allowed end-device Effective Isotropic Radiated Power (EIRP).
 
@@ -782,6 +788,24 @@ Bits 4 and 5 define the maximum Uplink and downlink dwell time respectively, whi
 When this MAC command is implemented (region specific), the end-device acknowledges the TxParamSetupReq command by sending a TxParamSetupAns command. This ***TxParamSetupAns*** command doesn‘t contain any payload.
 
 When this MAC command is used in a region where it is not required, the device does not process it and shall not transmit an acknowledgement.
+
+### 5.9 DeviceTime commands (DeviceTimeReq, DeviceTimeAns)
+
+This MAC command is only available if the device is activated on a LoRaWAN1.0.3 or later compatible Network Server. LoRaWAN1.0.2 or earlier servers do not implement this MAC command.
+
+With the DeviceTimeReq command, an end-device MAY request from the network the current network time. This allows the device to synchronize its internal clock to the network’s clock. This is specifically useful to speed-up the acquisition of the class B beacon.  The request has no payload.
+
+With the ***DeviceTimeAns*** command, the Network Server provides the network time to the end device. The time provided is the network time captured at the end of the uplink transmission. The command has a 5 bytes payload defined as follows:
+
+|Size (bytes)|4|1|
+|---|---|---|
+|DeviceTimeAns Payload|32-bit unsigned integer : Seconds since epoch*|8bits unsigned integer: fractional-second|in ½^8 second steps|
+**Figure 10 : DeviceTimeAns payload format**
+
+The time provided by the network MUST have a worst case accuracy of +/-100mSec.  
+The ***DeviceTimeAns*** command MUST be sent as a class A downlink (i.e. over the RX1/RX2 receive windows of the Class A mode). (*) The GPS epoch (i.e Sunday January the 6th 1980 at  00:00:00 UTC) is used as origin. The "seconds" field is the number of seconds elapsed since the origin. This field is monotonically increasing by 1 every second. To convert this field to UTC time, the leap seconds must be taken into account.  
+
+> Example: Friday 12th of February 2016 at 14:24:31 UTC corresponds to 1139322288 seconds since GPS epoch. As of June 2017, the GPS time is 17seconds ahead of UTC time.
 
 ## 6 End-Device Activation
 
@@ -868,11 +892,11 @@ The join-request message can be transmitted using any data rate and following a 
 
 #### 6.2.5 Join-accept message
 
-The network server will respond to the **join-request** message with a **join-accept** message if the end-device is permitted to join a network. The join-accept message is sent like a normal  downlink but uses delays JOIN\_ACCEPT\_DELAY1 or JOIN\_ACCEPT\_DELAY2 (instead of RECEIVE\_DELAY1 and RECEIVE\_DELAY2, respectively). The channel frequency and data rate used for these two receive windows are identical to the one used for the RX1 and RX2  receive windows described in the "receive windows" section of the LoRaWAN Regional Parameters document [PARAMS].
+The network server will respond to the **join-request** message with a **join-accept** message if the end-device is permitted to join a network. The join-accept message is sent like a normal  downlink but uses delays JOIN\_ACCEPT\_DELAY1 or JOIN\_ACCEPT\_DELAY2 (instead of RECEIVE\_DELAY1 and RECEIVE\_DELAY2, respectively). The channel frequency and data rate used for these two receive windows are identical to the one used for the RX1 and RX2  receive windows described in the "receive windows" section of the "LoRaWAN Regional physical layer specification" document.
 
 No response is given to the end-device if the join request is not accepted.
 
-The join-accept message contains an application nonce (**AppNonce**) of 3 octets, a network  identifier (**NetID**), an end-device address (**DevAddr**), a delay between TX and RX  (**RxDelay**) and an optional list of channel frequencies (**CFList**) for the network the end-device is joining. The CFList option is region specific and is defined in the LoRaWAN Regional Parameters document [PARAMS].
+The join-accept message contains an application nonce (**AppNonce**) of 3 octets, a network  identifier (**NetID**), an end-device address (**DevAddr**), a delay between TX and RX  (**RxDelay**) and an optional list of channel frequencies (**CFList**) for the network the end-device is joining. The CFList option is region specific and is defined in the "LoRaWAN Regional physical layer specification" document.
 
 |**Size (bytes)**|3|3|4|1|1|\(16) Optional|
 |---|---|---|---|---|---|---|
@@ -906,7 +930,7 @@ The DLsettings field contains the downlink configuration:
 
 The RX1DRoffset field sets the offset between the uplink data rate and the downlink data rate used to communicate with the end-device on the first reception slot (RX1). By default this offset is 0. The downlink data rate is always lower or equal than the uplink data rate. The  offset is used to take into account maximum power density constraints for base stations in some regions and to balance the uplink and downlink radio link margins.
 
-The actual relationship between the uplink and downlink data rate is region specific and  detailed in the LoRaWAN Regional Parameters document [PARAMS].
+The actual relationship between the uplink and downlink data rate is region specific and  detailed in the "Physical Layer" section.
 
 The delay **RxDelay** follows the same convention as the **Delay** field in the ***RXTimingSetupReq*** command.
  
