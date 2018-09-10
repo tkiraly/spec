@@ -978,31 +978,40 @@ End-devices should implement Class B operation when there is a requirement to op
 
 LoRaWAN Class B option adds a synchronized reception window on the end-device.
 
-One of the limitations of LoRaWAN Class A is the Aloha method of sending data from the end-device; it does not allow for a known reaction time when the customer application or the server wants to address the end-device. The purpose of Class B is to have an end-device available for reception on a predictable time, in addition to the reception windows that follows the random uplink transmission from the end-device of Class A. Class B is achieved by having the gateway sending a beacon on a regular basis to synchronize the all the enddevices in the network so that the end-device can opening a short extra reception window (called "ping slot") at a predictable time during a periodic time slot.
+One of the limitations of LoRaWAN Class A is the Aloha method of sending data from the end-device; it does not allow for a known reaction time when the customer application or the server wants to address the end-device. The purpose of Class B is to have an end-device available for reception at a predictable time, in addition to the reception windows that follows the random uplink transmission from the end-device of Class A. Class B is achieved by having the gateway sending a beacon on a regular basis to synchronize the all the end-devices in the network so that the end-device can open a short additional reception window (called "ping slot") at a predictable time during a periodic time slot.
 
 > **Note:** The decision to switch from Class A to Class B comes from the application layer of the end-device. If this class A to Class B switch needs to be controlled from the network side, the customer application must use one of the end-device's Class A uplinks to send back a downlink to the application layer, and it needs the application layer on the end-device to recognize this request -- this process is not managed at the LoRaWAN level.
 
 ## 9 Principle of synchronous network initiated downlink (Class-B option)
 
-For a network to support end-devices of Class B, all gateways must synchronously broadcast a beacon providing a timing reference to the end-devices. Based on this timing reference the end-devices can periodically open receive windows, hereafter called "ping slots", which can be used by the network infrastructure to initiate a downlink communication. A network initiated downlink using one of these ping slots is called a "ping". The gateway chosen to initiate this downlink communication is selected by the network server based on the signal quality indicators of the last uplink of the end-device. For this reason, if an enddevice moves and detects a change in the identity advertised in the received beacon, it must send an uplink to the network server so that the server can update the downlink routing path database.
+For a network to support end-devices of Class B, all gateways MAY synchronously broadcast a beacon providing a timing reference to the end-devices. Based on this timing reference the end-devices can periodically open receive windows, hereafter called "ping slots", which can be used by the network infrastructure to initiate a downlink communication. A network initiated downlink using one of these ping slots is called a "ping". The gateway chosen to initiate this downlink communication is selected by the network server. For this reason, if an enddevice moves and detects a change in the identity advertised in the received beacon, it must send an uplink to the network server so that the server can update the downlink routing path database.
+
+Before a device can operate in Class B mode, the following informations MUST be made available to the Network Server out-of-band.
+
+- The device’s default ping-slot periodicity
+- Default Ping-slot data rate
+- Default Ping-slot channel
 
 All end-devices start and join the network as end-devices of Class A. The end-device application can then decide to switch to Class B. This is done through the following process:
 
-- The end-device application requests the LoRaWAN layer to switch to Class B mode. The LoRaWAN layer in the end-device searches for a beacon and returns either a BEACON\_LOCKED service primitive to the application if a network beacon was found and locked or a BEACON\_NOT\_FOUND service primitive. To accelerate the beacon discovery the LoRaWAN layer may use the "BeaconTimingReq" message described later.
+- The end-device application requests the LoRaWAN layer to switch to Class B mode. The LoRaWAN layer in the end-device searches for a beacon and returns either a BEACON\_LOCKED service primitive to the application if a network beacon was found and locked or a BEACON\_NOT\_FOUND service primitive. To accelerate the beacon discovery the LoRaWAN layer may use the "DeviceTimeReq" MAC command.
 
 - Based on the beacon strength and the battery life constraints, the end-device application selects a ping slot data rate and periodicity, this is then requested them from the end-device LoRaWAN layer.
 
 - Once in Class B mode, the MAC layer sets to 1 the *Class B* bit of the FCTRL field of every uplink frame transmitted. This bit signals to the server that the device has switched to Class B. The MAC layer will autonomously schedule a reception slot for each beacon and each ping slot. When the beacon reception is successful the enddevice LoRaWAN layer forwards the beacon content to the application together with the measured radio signal strength. The end-device LoRaWAN layer takes into account the maximum possible clock drift in the scheduling of the beacon reception slot and ping slots. When a downlink is successfully demodulated during a ping slot, it is processed similarly to a downlink as described in the LoRaWAN Class A specification.
 
-- A mobile end-device must periodically inform the network server of its location to update the downlink route. This is done by transmitting a normal (possibly empty) "unconfirmed" or "confirmed" uplink. The end-device LoRaWAN layer will appropriately set the *Class B* bit to 1. Optimally this can be done more efficiently if the application detects that the node is moving by analyzing the beacon content. In that case the end-device must apply a random delay (as defined in Section 16.5 between the beacon reception and the uplink transmission to avoid systematic uplink collisions.
+- A mobile end-device should periodically inform the network server of its location to update the downlink route. This is done by transmitting a normal (possibly empty) "unconfirmed" or "confirmed" uplink. The end-device LoRaWAN layer will appropriately set the *Class B* bit to 1 in the frame's FCtrl field. Optimally this can be done more efficiently if the application detects that the node is moving by analyzing the beacon content. In that case the end-device must apply a random delay (as defined in Section 16.5 between the beacon reception and the uplink transmission to avoid systematic uplink collisions.
 
-- If no beacon has been received for a given period (as defined in Section 13.2), the synchronization with the network is lost. The MAC layer must inform the application layer that it has switched back to Class A. As a consequence the end-device LoRaWAN layer stops setting the *Class B* bit in all uplinks and this informs the network server that the end-device is no longer in Class B mode. The end-device application can try to switch back to Class B periodically. This will restart this process starting with a beacon search.
+- At any time the Network Server MAY change the device’s ping-slot downlink frequency or data rate by sending a PingSlotChannelReq MAC command.
+- The device MAY change the periodicity of its ping-slots at any time. To do so, it MUST temporarily stop class B operation (unset class B bit in its uplink frames) and send a PingSlotInfoReq to the Network Server. Once this command is acknowledged the device MAY restart class B operation with the new ping-slot periodicity
+
+- If no beacon has been received for a given period (as defined in Section 13.2), the synchronization with the network is lost. The MAC layer should inform the application layer that it has switched back to Class A. As a consequence the end-device LoRaWAN layer stops setting the *Class B* bit in all uplinks and this informs the network server that the end-device is no longer in Class B mode. The end-device application can try to switch back to Class B periodically. This will restart this process starting with a beacon search.
 
 The following diagram illustrates the concept of beacon reception slots and ping slots.
 
 ![beacon diagram](figure04.png)
 
-**Figure 10: Beacon reception slot and ping slots**
+**Figure 11: Beacon reception slot and ping slots**
 
 In this example, given the beacon period is 128 s, the end-device also opens a ping reception slot every 32 s. Most of the time this ping slot is not used by the server and therefore the end-device reception window is closed as soon as the radio transceiver has assessed that no preamble is present on the radio channel. If a preamble is detected the radio transceiver will stay on until the downlink frame is demodulated. The MAC layer will then process the frame, check that its address field matches the end-device address and that the Message Integrity Check is valid before forwarding it to the application layer.
 
@@ -1013,8 +1022,9 @@ The uplink frames in Class B mode are same as the Class A uplinks with the excep
 |**Bit\#**|7|6|5|4|3..0|
 |---|---|---|---|---|---|
 |**FCtrl**|ADR|ADRACKReq|ACK|Class B|FOptsLen|
+**Figure 12 : class B FCtrl fields**
 
-The *Class B* bit set to 1 in an uplink signals the network server that the device as switched to Class B mode and is now ready to receive scheduled downlink pings.
+The *Class B* bit set to 1 in an uplink signals the network server.
 
 The signification of the FPending bit for downlink is unaltered and still signals that one or more downlink frames are queued for this device in the server and that the device should keep is receiver on as described in the Class A specification.
 
@@ -1022,15 +1032,17 @@ The signification of the FPending bit for downlink is unaltered and still signal
 
 ### 11.1 Physical frame format
 
-A downlink Ping uses the same format as a Class A downlink frame but might follow a different channel frequency plan.
+A downlink Ping uses the same format as a Class A downlink frame but might follow a different channel frequency or data rate plan.
 
 ### 11.2 Unicast & Multicast MAC messages
 
 Messages can be "unicast" or "multicast". Unicast messages are sent to a single end-device and multicast messages are sent to multiple end-devices. All devices of a multicast group must share the same multicast address and associated encryption keys. The LoRaWAN Class B specification does not specify means to remotely setup such a multicast group or securely distribute the required multicast key material. This must either be performed during the node personalization or through the application layer.
 
+> Example: The document [RPD1] describes a possible application layer mechanism for over-the-air multicast key distribution.
+
 #### 11.2.1 Unicast MAC message format
 
-The MAC payload of a unicast downlink **Ping** uses the format defined in the Class A specification. It is processed by the end-device in exactly the same way. The same frame counter is used and incremented whether the downlink uses a Class B ping slot or a Class A "piggy-back" slot.
+The MAC payload of a unicast downlink **Ping** uses the format defined in the Class A specification. It is processed by the end-device in exactly the same way. The same frame counter is used and incremented whether the downlink uses a Class B ping slot or a Class A downlink slot.
 
 #### 11.2.2 Multicast MAC message format
 
@@ -1056,14 +1068,16 @@ A Class B device may be temporarily unable to receive beacons (out of range from
 
 In the event of beacon loss, a device shall be capable of maintaining Class B operation for 2 hours (120 minutes) after it received the last beacon. This temporary Class B operation without beacon is called "beacon-less" operation. It relies on the end-device's own clock to keep timing.
 
-During beacon-less operation, unicast, multicast and beacon reception slots must all be progressively expanded to accommodate the end-device's possible clock drift.
+During beacon-less operation, Class B unicast, multicast and beacon reception slots must all be progressively expanded to accommodate the end-device's possible clock drift.
 
 ![beacon-less operation](figure05.png)
-**Figure 11 : beacon-less temporary operation**
+**Figure 13 : beacon-less temporary operation**
 
 ### 12.2 Extension of beacon-less operation upon reception
 
 During this 120 minutes time interval the reception of any beacon directed to the end-device, should extend the Class B beacon-less operation further by another 120 minutes as it allows to correct any timing drift and reset the receive slots duration.
+
+> Note: Device should also use classB pingSlots downlinks to resynchronize its' internal clock
 
 ### 12.3 Minimizing timing drift
 
@@ -1079,7 +1093,7 @@ To operate successfully in Class B the end-device must open reception slots at p
 The interval between the start of two successive beacons is called the beacon period. The beacon frame transmission is aligned with the beginning of the BEACON\_RESERVED interval. Each beacon is preceded by a guard time interval where no ping slot can be placed. The length of the guard interval corresponds to the time on air of the longest allowed frame. This is to insure that a downlink initiated during a ping slot just before the guard time will always have time to complete without colliding with the beacon transmission. The usable time interval for ping slot therefore spans from the end of the beacon reserved time interval to the beginning of the next beacon guard interval.
 
 ![beacon timing](figure06.png)
-**Figure 12: Beacon timing**
+**Figure 14: Beacon timing**
 
 |Beacon\_period|128 s|
 |---|---|
@@ -1087,13 +1101,13 @@ The interval between the start of two successive beacons is called the beacon pe
 |Beacon\_guard|3.000 s|
 |Beacon-window|122.880 s|
 
-**Table 12: Beacon timing**
+**Table 13: Beacon timing**
 
 The beacon frame time on air is actually much shorter than the beacon reserved time interval to allow appending network management broadcast frames in the future.
 
 The beacon window interval is divided into 2<sup>12</sup> = 4096 ping slots of 30 ms each numbered from 0 to 4095.
 
-An end-device using the slot number N must turn on its receiver exactly *Ton* seconds after the start of the beacon where:
+An end-device using the slot number N must have its receiver on *Ton* seconds after the start of the beacon where:
 
 *Ton* = *beacon*\_*reserved* + *N* \* 30 ms N is called the *slot index.*
 
@@ -1108,11 +1122,12 @@ The following parameters are used:
 
 |**DevAddr**|Device 32 bit network unicast or multicast address|
 |---|---|
-|*pingNb*|Number of ping slots per beacon period. This must be a power of 2 integer: *pingNb* = 2<sup>k</sup> where 1 \<= k \<=7|
+|*pingNb*|Number of ping slots per beacon period. This must be a power of 2 integer: *pingNb* = 2<sup>k</sup> where 0 \<= k \<=7|
 |*pingPeriod*|Period of the device receiver wake-up expressed in number of slots: *pingPeriod* = 2<sup>12</sup> / *pingNb*|
 |*pingOffset*|Randomized offset computed at each beacon period start. Values can range from 0 to (pingPeriod-1)|
 |*beaconTime*|The time carried in the field **BCNPayload**.Time of the immediately preceding beacon frame|
 |*slotLen*|Length of a unit ping slot = 30 ms|
+**Table 14 : Class B slot randomization algorithm parameters**
 
 At each beacon period the end-device and the server compute a new pseudo-random offset to align the reception slots. An AES encryption with a fixed key of all zeros is used to randomize:
 
@@ -1144,39 +1159,40 @@ All commands described in the Class A specification shall be implemented in Clas
 
 |**CID**|**Command**|**Transmitted by End-device**|**Transmitted by Gateway**|**Short Description**|
 |---|---|---|---|---|
-|0x10|*PingSlotInfoReq*|x|x|Used by the end-device to communicate the ping unicast slot data rate and periodicity to the network server|
-|0x10|*PingSlotInfoAns*|x|x|Used by the network to acknowledge a ***PingInfoSlotReq*** command|
-|0x11|*PingSlotChannelReq*|x|x|Used by the network server to set the unicast ping channel of an end-device|
-|0x11|*PingSlotFreqAns*|x|x|Used by the end-device to acknowledge a ***PingSlotChannelReq*** command|
-|0x12|*BeaconTimingReq*|x|x|Used by end-device to request next beacon timing & channel to network|
-|0x12|*BeaconTimingAns*|x|x|Used by network to answer a ***BeaconTimingReq*** uplink|
-|0x13|*BeaconFreqReq*|x|x|Command used by the network server to modify the frequency at which the end- device expects to receive beacon broadcast|
-|0x13|*BeaconFreqAns*|x|x|Used by the end-device to acknowledge a BeaconFreqReq command|
+|0x10|*PingSlotInfoReq*|x||Used by the end-device to communicate the ping unicast slot periodicity to the network server|
+|0x10|*PingSlotInfoAns*||x|Used by the network to acknowledge a ***PingInfoSlotReq*** command|
+|0x11|*PingSlotChannelReq*||x|Used by the network server to set the unicast ping channel frequency and data rate of an end-device|
+|0x11|*PingSlotChannelAns*|x||Used by the end-device to acknowledge a ***PingSlotChannelReq*** command|
+|0x12|*BeaconTimingReq*|x||Deprecated|
+|0x12|*BeaconTimingAns*||x|deprecated|
+|0x13|*BeaconFreqReq*||x|Command used by the network server to modify the frequency at which the end- device expects to receive beacon broadcast|
+|0x13|*BeaconFreqAns*|x||Used by the end-device to acknowledge a BeaconFreqReq command|
+**Table 15 : Class B MAC command table**
 
 ### 14.1 PingSlotInfoReq
 
-With the ***PingSlotInfoReq*** command an end-device informs the server of its unicast ping  slot periodicity and expected data rate. This command must only be used to inform the  server of the parameters of a UNICAST ping slot. A multicast slot is entirely defined by the  application and should not use this command.
+With the ***PingSlotInfoReq*** command an end-device informs the server of its unicast ping slot periodicity. This command may only be used to inform the server of the periodicity of a UNICAST ping slot. A multicast slot is entirely defined by the application and should not use this command.
 
 |**Size (bytes)**|1|
 |---|---|
-|**PingSlotInfoReq Payload**|Periodicity & data rate|
+|**PingSlotInfoReq Payload**|PingSlotParam|
 
-|**Bit\#**|7|\[6:4\]|\[3:0\]|
-|---|---|---|---|
-|**Periodicity & data rate**|RFU|Periodicity|Data rate|
+|**Bit\#**|\[7:3\]|\[2:0\]|
+|---|---|---|
+|**PingSlotParam**|RFE|Periodicity|
 
 The **Periodicity** subfield is an unsigned 3 bits integer encoding the ping slot period currently used by the end-device using the following equation.
 
-*pingSlotPeriod* = 2 <sup>Periodicity</sup> in seconds
+*pingNb* = 2 <sup>7-*Periodicity*</sup> *and pingPeriod* = 2<sup>5+*Periodicity*</sup>
 
-- **Periodicity** = 0 means that the end-device opens a ping slot every second
+The actual ping slot periodicity will be equal to 0.96 x 2<sup>*Periodicity*</sup> in seconds
+
+- **Periodicity** = 0 means that the end-device opens a ping slot approximately every second during the beacon window interval
 - **Periodicity** = 7 , every 128 seconds which is the maximum ping period supported by the LoRaWAN Class B specification.
 
-The **Data rate** subfield encodes the data rate at which the end-device expects any ping. This uses the same encoding scheme that the ***LinkAdrReq*** command described in the Class A specification.
+To change its ping slot periodicity a device SHALL first revert to Class A , send the new periodicity through a ***PingSlotInfoReq*** command and get an acknowledge from the server through a ***PingSlotInfoAns*** . It MAY then switch back to Class B with the new periodicity.
 
-The server needs to be aware of the end-device ping slot periodicity or expected data rate  else Class B downlinks will not happen successfully. For that purpose the ***PingSlotInfoReq***  MAC command **must be acknowledged** with a ***PingSlotInfoAns*** before the device can  switch from class A to Class B**.** To change its ping slot scheduling or data rate a device  should first revert to Class A, send the new parameters through a ***PingSlotInfoReq***  command and get an acknowledge from the server through a ***PinSlotInfoAns***. It can then  switch back to Class B with the new parameters.
-
-This command can be concatenated with any other MAC command in the **FHDRFOpt** field  as described in the Class A specification frame format.
+This command MAY be concatenated with any other MAC command in the **FHDRFOpt** field as described in the Class A specification frame format.
 
 ### 14.2 BeaconFreqReq
 
@@ -1184,7 +1200,8 @@ This command is sent by the server to the end-device to modify the frequency on 
 
 |**Octets**|3|
 |---|---|
-|**PingSlotChannelReqPay load**|Frequency|
+|**BeaconFreqReq payload**|Frequency|
+**Figure 16 : BeaconFreqReq payload format**
 
 The Frequency coding is identical to the ***NewChannelReq*** MAC command defined in the 16 Class A.
 
@@ -1194,33 +1211,56 @@ A valid non-zero Frequency will force the device to listen to the beacon on a fi
 
 A value of 0 instructs the end-device to use the default beacon frequency plan as defined in  the "Beacon physical layer" section. Where applicable the device resumes frequency  hopping beacon search.
 
+Upon reception of this command the end-device answers with a ***BeaconFreqAns*** message.
+
+The MAC payload of this message contains the following information:
+
+|**Size (bytes)**|1|
+|---|---|
+|**BeaconFreqAns payload**|Status|
+
+The **Status** bits have the following meaning:
+|**Bits**|7:1|0|
+|---|---|---|
+|**Status**|RFU|Beacon frequency ok|
+
+||Bit = 0|Bit =1|
+|---|---|---|
+|**Beacon frequency ok**|The device cannot use this frequency, the previous beacon frequency is kept|The beacon frequency has been changed|
+
 ### 14.3 PingSlotChannelReq
 
-This command is sent by the server to the end-device to modify the frequency on which this  end-device expects the downlink pings.
+This command is sent by the server to the end-device to modify the frequency and/or the data rate on which the end-device expects the downlink pings.
+
+This command **can only be sent in a class A receive window** (following an uplink). The command SHALL NOT be sent in a class B ping-slot. If the device receives it inside a class B ping-slot, the MAC command SHALL NOT be processed. Once the NS has sent the first PingSlotChannelReq command, it SHOULD resend it until it receives a PingSlotChannelAns from the device. It MUST NOT attempt to use a class B ping slot until it receives the PingSlotChannelAns.
 
 |**Octets**|3|1|
 |---|---|---|
-|**PingSlotChannelReq Payload**|Frequency|DrRange|
+|**PingSlotChannelReq Payload**|Frequency|DR|
+**Figure 18 : PingSlotChannelReq payload format**
 
 The Frequency coding is identical to the ***NewChannelReq*** MAC command defined in the  Class A.
 
 **Frequency** is a 24bits unsigned integer. The actual ping channel frequency in Hz is 100 x  frequ. This allows defining the ping channel anywhere between 100MHz to 1.67GHz by  100Hz step. The end-device has to check that the frequency is actually allowed by its radio  hardware and return an error otherwise.
 
-A value of 0 instructs the end-device to use the default frequency plan.
+A value of 0 instructs the end-device to use the default frequency plan. Where applicable the device resumes frequency hopping beacon search.
+
+The DR byte contains the following fields:
 
 **DrRange** is the data rate range allowed on this channel. This byte is split in two 4-bit  indexes.
 
 |**Bits**|7:4|3:0|
 |---|---|---|
-|**DrRange**|Max data rate|Min data rate|
+|**DR**|RFU|Min data rate|
 
-Following the convention defined in the LoRaWAN Regional Parameters document [PARAMS], of the Class A specification,the "Min data rate" subfield designates the lowest data rate allowed on this channel. For example 0 designates DR0 / 125 kHz in the EU physical layer. Similarly "Max data rate" designates the highest data rate. For example in the EU spec, DrRange = 0x77 means that  only 50 kbps GFSK is allowed on a channel and DrRange = 0x50 means that DR0 / 125 kHz 10 to DR5 / 125 kHz are supported.
+The "data rate" subfield is the index of the Data Rate used for the ping-slot downlinks. The relationship between the index and the physical data rate is defined in [PHY] for each region.
 
-Upon reception of this command the end-device answers with a ***PingSlotFreqAns***  message. The MAC payload of this message contains the following information:
+Upon reception of this command the end-device answers with a ***PingSlotFreqAns*** message. The MAC payload of this message contains the following information:
 
 |**Size (bytes)**|1|
 |---|---|
 |**pingSlotFreqAns Payload**|Status|
+**Figure 19 : PingSlotFreqAns payload**
 
 The **Status** bits have the following meaning:
 
@@ -1230,16 +1270,14 @@ The **Status** bits have the following meaning:
 
 ||**Bit = 0**|**Bit = 1**|
 |---|---|---|
-|**Data rate range ok**|The designated data rate range exceeds the ones currently defined for this end device, the previous range is kept|The data rate range is compatible with the possibilities of the end device|
-|**Channel frequency ok**|The device cannot use this frequency, the previous ping frequency is kept|The device is able to use this frequency.|
+|**Data rate ok**|The designated data rate is not defined for this end device, the previous data rate is kept|The data rate is compatible with the possibilities of the end device|
+|**Channel frequency ok**|The device cannot  receive on this frequency|This frequency can be used by the end-device|
 
-### 14.4 BeaconTimingReq
+If either of those 2 bits equals 0, the command did not succeed and the ping-slot parameters have not been modified.
 
-This command is sent by the end-device to request the next beacon timing and channel. This MAC command has no payload. The **BeaconTimingReq*** & ***BeaconTimingAns***  mechanism is only meant to accelerate the initial beacon search to lower the end-device  energy requirement.
+### 14.4 BeaconTimingReq & BeaconTimingAns
 
-The network may answer only a limited number of requests per a given time period. An end device must not expect that ***BeaconTimingReq*** is answered immediately with a  ***BeaconTimingAns***. Class A end-devices wanting to switch to Class B should not transmit  more than one ***BeaconTimingReq*** per hour.
-
-End-devices requiring a fast beacon lock must implement an autonomous beacon finding  algorithm.
+These MAC commands are deprecated in the LoRaWAN1.0.3 version. The device may use DeviceTimeReq&Ans commands as a substitute.
 
 ### 14.5 BeaconTimingAns
 
