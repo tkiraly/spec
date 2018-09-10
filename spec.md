@@ -1297,105 +1297,55 @@ In networks where the beacon uses alternatively several channels, the "**Channel
 
 ### 15.1 Beacon physical layer
 
-Besides relaying messages between end-devices and network servers, all gateways participate in providing a time-synchronization mechanisms by sending beacons at regular fixed intervals configurable per network (BEACON\_INTERVAL). All beacons are transmitted in radio packet implicit mode, that is, without a LoRa physical header and with no CRC being appended by the radio.
+Besides relaying messages between end-devices and network servers, all gateways MAY participate in providing a time-synchronization mechanisms by sending beacons at regular fixed intervals configurable per network (BEACON\_INTERVAL). All beacons are transmitted in radio packet implicit mode, that is, without a LoRa physical header and with no CRC being appended by the radio.
 
 |**PHY**|Preamble|BCNPayload|
 |---|---|---|
+**Figure 20 : beacon physical format**
 
-The beacon Preamble begins with (a longer than default) 10 unmodulated symbols. This allows end-devices to implement a low power duty-cycled beacon search.
+The beacon Preamble SHALL begin with (a longer than default) 10 unmodulated symbols. This allows end-devices to implement a low power duty-cycled beacon search.
 
-The beacon frame length is tightly coupled to the operation of the radio Physical layer. Therefore the actual frame length might change from one region implementation to another. The changing fields are highlighted in **Bold** in the following sections.
-
-#### 15.1.1 EU 863-870MHz ISM Band
-
-The beacons are transmitted using the following settings
-
-|DR|3|Corresponds to SF9 spreading factor with 125 kHz BW|
-|---|---|---|
-|CR|1|Coding rate = 4/5|
-|frequency|869.525 MHz|This is the recommended frequency allowing +27 dBm EIRP. Network operators may use a different frequency as long as ETSI compliance is achieved|
-
-The beacon frame content is:
-
-|**Size (bytes)**|3|4|**1**|7|**2**|
-|---|---|---|---|---|---|
-|**BCNPayload**|NetID|Time|**CRC**|GwSpecific|**CRC**|
-
-#### 15.1.2 US 902-928MHz ISM Band
-
-The beacons are transmitted using the following settings:
-
-|DR|10|Corresponds to SF10 spreading factor with 500kHz bw|
-|---|---|---|
-|CR|1|Coding rate = 4/5|
-|frequency|923.3 to 927.5MHz Beaconing is performed on the same with 600kHz steps|Beaconing is performed on the same channel that normal downstream traffic as defined in the Class A specification|
-
-The downstream channel used for a given beacon is:
-
-Channel = [*floor*(*becaon_time*/*beacon_period*)] *modulo* 8
-
-- whereby beacon\_time is the integer value of the 4 bytes "Time" field of the beacon frame
-
-- whereby beacon\_period is the periodicity of beacons , 128 seconds
-
-- whereby *floor(x)* designates rounding to the integer immediately inferior to x
-
-> Example: the first beacon will be transmitted on 923.3Mhz , the second on 923.9MHz, the 9<sup>th</sup> beacon will be on 923.3Mhz again.
-
-|Beacon channel nb|Frequency \[MHz\]|
-|---|---|
-|0|923.3|
-|1|923.9|
-|2|924.5|
-|3|925.1|
-|4|925.7|
-|5|926.3|
-|6|926.9|
-|7|927.5|
-
-The beacon frame content is:
-
-|**Size (bytes)**|3|4|**2**|7|**1**|**2**|
-|---|---|---|---|---|---|---|
-|**BCNPayload**|NetID|Time|**CRC**|GwSpecific|**RFU**|**CRC**|
+The beacon frame length is tightly coupled to the operation of the radio Physical layer. Therefore the actual frame length and content might change from one region implementation to another. The beacon content, modulation parameters and frequencies to use are specified in [PHY] for each region.
 
 ### 15.2 Beacon frame content
 
-The beacon payload **BCNPayload** consists of a network common part and a gatewayspecific part.
+The beacon payload **BCNPayload** consists of a network common part and an OPTIONAL gateway specific part.
 
-|**Size (bytes)**|3|4|1/2|7|0/1|2|
+|**Size (bytes)**|2 to 5|4|2|7|0 to 3|2|
 |---|---|---|---|---|---|---|
-|**BCNPayload**|NetID|Time|CRC|GwSpecific|RFU|CRC|
+|**BCNPayload**|RFU|Time|CRC|GwSpecific|RFU|CRC|
+||Compulsory common part|Compulsory common part|Compulsory common part|Optional part|Optional part|Optional part|
+**Figure 21 : beacon frame content**
 
-The network common part contains a network identifier **NetID** to uniquely identify the network for which the beacon is sent, and a timestamp **Time** in seconds since 00:00:00 [Coordinated Universal Time](http://en.wikipedia.org/wiki/Coordinated_Universal_Time) (UTC), 1 January 1970. The integrity of the beacon's network commonpart is protected by an 8 or 16 bits CRC depending on PHY layerparameters. The CRC-16 is computed on the NetID+Time fields asdefined in the IEEE 802.15.4-2003 section 7.2.1.8. When an 8 bits CRCis required then the 8 LSBs of the computed CRC-16 are used.
+The common part contains an RFU field equal to 0, a timestamp **Time** in seconds since January 6, 1980 00:00:00 UTC (start of the GPS epoch) modulo 2^32.  The integrity of the beacon's network common part is protected by a 16 bits CRC. The CRC-16 is computed on the RFU+Time fields as defined in the IEEE 802.15.4-2003 section 7.2.1.8. This CRC uses the following polynomial **P(x) = x<sup>16</sup>+ x<sup>12</sup>+ x<sup>5</sup>+ x<sup>0</sup>** . The CRC is calculated on the bytes in the order they are sent over-the-air
 
 For example: This is a valid EU868 beacon frame:
 
-AA BB CC \|00 00 02 CC \|7E \|00 \|01 20 00 \|00 81 03 \|DE 55  Bytes are transmitted left to right. The corresponding field values are:
+00 00 | 00 00 02 CC | A2 7E | 00 | 01 20 00 | 00 81 03 | DE 55
 
-|**Field**|NetID|Time|**CRC**|InfoDesc|lat|long|**CRC**|
+Bytes are transmitted left to right. The first CRC is calculated on [00 00 00 00 02 CC]. The corresponding field values are:
+
+|**Field**|RFU|Time|**CRC**|InfoDesc|lat|long|**CRC**|
 |---|---|---|---|---|---|---|---|
-|**Value Hex**|CCBBAA|CC020000|**7E**|0|002001|038100|**55DE**|
+|**Value Hex**|0000|CC020000|**7EA2**|0|002001|038100|**55DE**|
+**Figure 22 : example of beacon CRC calculation (1)**
 
-The CRC-16 of the NetID+Time fields is 0xC87E but only the 8LSBs are used in that case
-
-The seven LSB of the **NetID** are called **NwkID** and match the seven MSB of the short  address of an end-device. Neighboring or overlapping networks **must have** different  **NwkIDs**.
-
-The gateway specific part provides additional information regarding the gateway sending a beacon and therefore may differ for each gateway. The RFU field when applicable (region  specific) should be equal to 0. The optional part is protected by a CRC-16 computed on the  GwSpecific+RFU fields. The CRC-16 definition is the same as for the mandatory part.
+The optional gateway specific part provides additional information regarding the gateway sending a beacon and therefore may differ for each gateway. The RFU field when applicable (region specific) should be equal to 0. The optional part is protected by a CRC-16 computed on the GwSpecific+RFU fields. The CRC-16 definition is the same as for the mandatory part.
 
 For example: This is a valid US900 beacon:
 
 |**Field**|NetID|Time|**CRC**|InfoDesc|lat|long|**RFU**|**CRC**|
 |---|---|---|---|---|---|---|---|---|
-|**Value Hex**|CCBBAA|CC020000|**C87E**|0|002001|038100|**00**|**D450**|
+|**Value Hex**|000000|CC020000|**7EA2**|00|002001|038100|**00**|**D450**|
+**Figure 23 : example of beacon CRC calculation (2)**
 
 Over the air the bytes are sent in the following order:
 
-AA BB CC \|00 00 02 CC \|7E C8 \|00 \|01 20 00 \|00 81 03 \|00 \|50 D4
+00 00 00 | 00 00 02 CC | A2 7E  | 00 | 01 20 00 | 00 81 03 |00 | 50 D4
 
-Listening and synchronizing to the network common part is sufficient to operate a stationary end-device in Class B mode. A mobile end-device should also demodulate the gateway specific part of the beacon to be able to signal to the network server whenever he is moving from one cell to another.
+Listening and synchronizing to the network common part is sufficient to operate a stationary end-device in Class B mode. A mobile end-device MAY also demodulate the gateway specific part of the beacon to be able to signal to the network server whenever he is moving from one cell to another.
 
-> **Note:** As mentioned before, all gateways send their beacon at exactly the same point in time (i.e., time-synchronously) so that for network common part there are no visible on-air collisions for a listening enddevice even if the end-device simultaneously receives beacons from several gateways. With respect to the gateway specific part, collision occurs but an end-device within the proximity of more than one gateway will still be able to decode the strongest beacon with high probability.
+> **Note**: As mentioned before, all gateways participating in the beaconing process send their beacon simultaneously so that for network common part there are no visible on-air collisions for a listening end-device even if the end-device simultaneously receives beacons from several gateways. Not all gateways are required to participate in the beaconing process. The participation of a gateway to a given beacon may be randomized.  With respect to the gateway specific part, collision occurs but an end-device within the proximity of more than one gateway will still be able to decode the strongest beacon with high probability.
 
 ### 15.3 Beacon GwSpecific field format
 
@@ -1404,16 +1354,19 @@ The content of the **GwSpecific** field is as follow:
 |**Size (bytes)**|1|6|
 |---|---|---|
 |**GwSpecific**|InfoDesc|Info|
+**Figure 24 : beacon GwSpecific field format**
 
-The information descriptor**InfoDesc** describes how the information field **Info** shall be  interpreted.
+The information descriptor **InfoDesc** describes how the information field **Info** shall be  interpreted.
 
 |**InfoDesc**|**Meaning**|
 |---|---|
 |0|GPS coordinate of the gateway first antenna|
 |1|GPS coordinate of the gateway second antenna|
 |2|GPS coordinate of the gateway third antenna|
-|3:127|RFU|
+|3|NetID+GatewayID|
+|4:127|RFU|
 |128:255|Reserved for custom network specific broadcasts|
+**Table 16 : beacon infoDesc index mapping**
 
 For a single omnidirectional antenna gateway the **InfoDesc** value is 0 when broadcasting GPS coordinates. For a site featuring 3 sectored antennas for example, the first antenna broadcasts the beacon with **InfoDesc** equals 0, the second antenna with **InfoDesc** field  equals 1, etc ...
 
@@ -1424,20 +1377,44 @@ For **InfoDesc** = 0 ,1 or 2, the content of the **Info** field encodes the GPS 
 |**Size (bytes)**|3|3|
 |---|---|---|
 |**Info**|Lat|Lng|
+**Figure 25 : beacon Info field format , infoDesc = 0,1,2**
 
 The latitude and longitude fields (**Lat** and **Lng**, respectively) encode the geographical location of the gateway as follows:
 
-- The north-south latitude is encoded using a signed 24 bit word where -2<sup>23</sup> corresponds to 90° south (the South Pole) and 2<sup>23</sup> corresponds to 90° north (the North Pole). The equator corresponds to 0.
+- The north-south latitude is encoded using a two's complement 24 bit word where -2<sup>23</sup> corresponds to 90° south (the South Pole) and 2<sup>23</sup>-1 corresponds to -90° north (the North Pole). The equator corresponds to 0.
 
-- The east-west longitude is encoded using a signed 24 bit word where - 2<sup>23</sup>corresponds to 180° west an 2<sup>23</sup> corresponds to 180° east. The Greenwich meridian corresponds to 0.
+- The east-west longitude is encoded using a two's complement 24 bit word where -2<sup>23</sup> corresponds to 180° West and 2<sup>23</sup>-1 corresponds to -180° east. The Greenwich meridian corresponds to 0.
+
+#### 15.3.2 NetID+GatewayID
+
+For **InfoDesc** = 3, the content of the **Info** field encodes the network’s NetID plus a freely allocated gateway or cell identifier. The format of the Info field is:
+
+|**Size (bytes)**|3|3|
+|---|---|---|
+|**Info**|NetID|GatewayID|
+**Figure 26 : beacon Info field format, infoDesc=3**
 
 ### 15.4 Beaconing precise timing
 
-The beacon is sent every 128 seconds starting at 00:00:00 Coordinated Universal Time (UTC), 1 January 1970 plus **NwkID plus** TBeaconDelay. Therefore the beacon is sent at B<sub>T</sub> = *k* \* 128 + **NwkID** + TBeaconDelay  seconds after 00:00:00 Coordinated Universal Time (UTC), 1 January 1970 whereby*k* is the smallest integer for which *k* \* 128 + **NwkID**\>*T* whereby *T* = seconds since 00:00:00 Coordinated Universal Time (UTC), 1 January 1970.
+The beacon is sent every 128 seconds starting at January 6, 1980 00:00:00 UTC (start of the GPS epoch) plus TBeaconDelay. Therefore the beacon is sent at
 
-> **Note:** *T* is not (!) Unix time. Similar to GPS time and unlike Unix time, *T* is strictly monotonically increasing and is not influenced by leap seconds.
+B<sub>T</sub> = *k* \* 128 + TBeaconDelay
+seconds after GPS epoch
 
-Whereby TBeaconDelay is a network specific delay in the \[0:50\] ms range. TBeaconDelay may vary from one network to another and is meant to allow a slight transmission delay of the gateways. TBeaconDelay must be the same for all gateways of a given network. TBeaconDelay must be smaller than 50 ms. All end-devices ping slots use the beacon transmission time as a timing reference, therefore the network server as to take TBeaconDelay into account when scheduling the class B downlinks.
+whereby*k* is the smallest integer for which
+
+*k* \* 128 + \>*T*
+
+whereby
+
+*T* = seconds since January 6, 1980 00:00:00 UTC (start of the GPS time).
+
+> **Note:** T is GPS time and unlike Unix time, T is strictly monotonically increasing and is not influenced by leap seconds.
+
+Whereby TBeaconDelay is 1.5 mSec +/- 1uSec delay.  
+TBeaconDelay is meant to allow a slight transmission delay of the gateways required by the radio system to switch from receive to transmit mode.
+
+All end-devices ping slots use the beacon transmission start time as a timing reference, therefore the network server as to take TBeaconDelay into account when scheduling the class B downlinks.
 
 ### 15.5 Network downlink route update requirements
 
@@ -1448,28 +1425,32 @@ Whenever a Class B device moves and changes cell, it needs to communicate with t
 The end-device has the choice between 2 basic strategies:
 
 - Systematic periodic uplink: simplest method that doesn't require demodulation of the"gateway specific" field of the beacon. Only applicable to slowly moving or stationery end-devices. There are no equirements on those periodic uplinks.
-- Uplink on cell change: The end-device demodulates the "gateway specific" field of the beacon, detects that the ID of the gateway broadcasting the beacon it demodulates has changed, and sends an uplink. In that case the device should respect a pseudo random delay in the \[0:120\] seconds range between the beacon demodulation and the uplink transmission. This is required to insure that the uplinks of multiple Class B devices entering or leaving a cell during the same beacon period will not systematically occur at the same time immediately after the beacon broadcast.
+- Uplink on cell change: The end-device demodulates the optional "gateway specific" field of the beacon, detects that the ID of the gateway broadcasting the beacon it demodulates has changed, and sends an uplink. In that case the device SHALL respect a pseudo random delay in the \[0:120\] seconds range between the beacon demodulation and the uplink transmission. This is required to insure that the uplinks of multiple Class B devices entering or leaving a cell during the same beacon period will not systematically occur at the same time immediately after the beacon broadcast.
 
 Failure to report cell change will result in Class B downlink being temporary not operational. The network server may have to wait for the next end-device uplink to transmit downlink traffic.
 
 ## 16 Class B unicast & multicast downlink channel frequencies
 
-### 16.1 EU 863-870MHz ISM Band
+The class B downlink channel selection mechanism depends on the way the class B beacon is being broadcasted.
 
-All unicast&multicastClass B downlinks use a single frequency channel defined by the "***PingSlotChannelReq"*** MAC command. The default frequency is 869.525MHz
+### 16.1 Single channel beacon transmission
 
-### 16.2 US 902-928MHz ISM Band
+In certain regions (ex EU868) the beacon is transmitted on a single channel. In that case, All unicast&multicastClass B downlinks use a single frequency channel defined by the "***PingSlotChannelReq***" MAC command. The default frequency is defined in  [PHY].
 
-By default Class B downlinks use a channel function of the Time field of the last beacon (see Beacon Frame content) and the DevAddr.
+### 16.2 Frequency-hopping beacon transmission
 
-Class B downlink channel = [DevAddr + floor(Beacon_Time / Beacon_period)] modulo 8
+In certain regions (ex US902-928 or CN470-510) the class B beacon is transmitted following a frequency hopping pattern.
+
+In that case, By default Class B downlinks use a channel which is a function of the Time field of the last beacon (see Beacon Frame content) and the DevAddr.
+
+Class B downlink channel = [DevAddr + floor(Beacon_Time / Beacon_period)] modulo NbChannel
 
 - Whereby Beacon\_Time is the 32 bit Time field of the current beacon period
 - Beacon\_period is the length of the beacon period (defined as 128sec in the specification)
 - Floor designates rounding to the immediately lower integer value
 - DevAddr is the 32 bits network address of the device
 
-Class B downlinks therefore hop across 8 channels in the ISM band and all Class B enddevices are equally spread amongst the 8 downlink channels.
+NbChannel is the number of channel over which the beacon is frequency hopping Class B downlinks therefore hop across NbChannel channels (identical to the beacon transmission channels) in the ISM band and all Class B end-devices are equally spread amongst the NbChannel downlink channels.  
 
 If the "***PingSlotChannelReq"*** command with a valid non-zero argument is used to set the Class B downlink frequency then all subsequent ping slots should be opened on this single frequency independently of the last beacon frequency.
 
@@ -1495,12 +1476,14 @@ The Class C end-device will listen with RX2 windows parameters as oftenas possib
 
 Class C devices implement the same two receive windows as Class Adevices, but they do not close RX2 window until they need to send again.Therefore they may receive a downlink in the RX2 window at nearly any time including downlinks sent for the purpose of MAC command or ACK transmission. A short listening window on RX2 frequency and data rate is alsoopened between the end of the transmission and the beginning of the RX1receive window.
 
-![class c timing](figure07.png)
-**Figure 13: Class C end-device reception slot timing.**
+![class c timing](figure13.png)
+**Figure 27: Class C end-device reception slot timing.**
 
 ### 17.2 Class C Multicast downlinks
 
 Similarly to Class B, Class C devices may receive multicast downlinkframes. The multicast address and associated network session key andapplication session key must come from the application layer. The samelimitations apply for Class C multicast downlink frames:
+
+> Example: [RPD1] provides an application layer mechanism to setup a multicast group over-the-air.
 
 - They are not allowed to carry MAC commands, neither in the **FOpt** field, nor in the payload on port 0 because a multicast downlink does not have the same authentication robustness as a unicast frame.
 - The **ACK** and **ADRACKReq** bits must be zero. The **MType** field must carry the value for Unconfirmed Data Down.
@@ -1522,7 +1505,7 @@ The following diagram illustrates the steps followed by an end-device trying to 
 
 ![uplink diagram](figure08.png)
 
-**Figure 14: Uplink timing diagram for confirmed data messages**
+**Figure 28: Uplink timing diagram for confirmed data messages**
 
 The end-device first transmits a confirmed data frame containing the Data0 payload at an arbitrary instant and on an arbitrary channel. The frame counter Cu is simply derived by adding 1 to the previous uplink frame counter. The network receives the frame and generates a downlink frame with the ACK bit set exactly RECEIVE\_DELAY1 seconds later, using the first receive window of the end-device. This downlink frame uses the same data rate and the same channel as the Data0 uplink. The downlink frame counter Cd is also derived by adding 1 to the last downlink towards that specific end-device. If there is no downlink payload pending the network shall generate a frame without a payload. In this example the frame carrying the ACK bit is not received.
 
@@ -1533,7 +1516,7 @@ If an end-point does not receive a frame with the ACK bit set in one of the two 
 The following diagram illustrates the basic sequence of a "confirmed" downlink.
 
 ![downlink diagram](figure09.png)
-**Figure 15: Downlink timing diagram for confirmed data messages**
+**Figure 29: Downlink timing diagram for confirmed data messages**
 
 The frame exchange is initiated by the end-device transmitting an "unconfirmed" application payload or any other frame on channel A. The network uses the downlink receive window to transmit a "confirmed" data frame towards the end-device on the same channel A. Upon reception of this data frame requiring an acknowledgement, the end-device transmits a frame with the ACK bit set at its own discretion. This frame might also contain piggybacked data or MAC commands as its payload. This ACK uplink is treated like any standard uplink, and as such is transmitted on a random channel that might be different from channel A.
 
@@ -1545,12 +1528,12 @@ The next diagram illustrates the use of the **frame pending** (FPending) bit on 
 >**Note:** The FPending bit is independent to the acknowledgment scheme.
 
 ![downlink diagram](figure10.png)
-**Figure 16: Downlink timing diagram for frame-pending messages, example 1**
+**Figure 30: Downlink timing diagram for frame-pending messages, example 1**
 
 In this example the network has two confirmed data frames to transmit to the end-device. The frame exchange is initiated by the end-device via a normal "unconfirmed" uplink message on channel A. The network uses the first receive window to transmit the Data0 with the bit FPending set as a confirmed data message. The device acknowledges the reception of the frame by transmitting back an empty frame with the ACK bit set on a new channel B. RECEIVE\_DELAY1 seconds later, the network transmits the second frame Data1 on channel B, again using a confirmed data message but with the FPending bit cleared. The end-device acknowledges on channel C.
 
 ![downlink diagram](figure11.png)
-**Figure 17: Downlink timing diagram for frame-pending messages, example 2**
+**Figure 31: Downlink timing diagram for frame-pending messages, example 2**
 
 In this example, the downlink frames are "unconfirmed" frames, the end-device does not need to send back and acknowledge. Receiving the Data0 unconfirmed frame with the FPending bit set the end-device sends an empty data frame. This first uplink is not received by the network. If no downlink is received during the two receive windows, the network has to wait for the next spontaneous uplink of the end-device to retry the transfer. The enddevice can speed up the procedure by sending a new empty data frame.
 >**Note:** An acknowledgement is never sent twice.
@@ -1558,7 +1541,7 @@ In this example, the downlink frames are "unconfirmed" frames, the end-device do
 The FPending bit, the ACK bit, and payload data can all be present in the same downlink. For example, the following frame exchange is perfectly valid.
 
 ![downlink diagram](figure12.png)
-**Figure 18: Downlink timing diagram for frame-pending messages, example 3**
+**Figure 32: Downlink timing diagram for frame-pending messages, example 3**
 
 The end-device sends a "confirmed data" uplink. The network can answer with a confirmed downlink containing Data + ACK + "Frame pending" then the exchange continues as previously described.
 
@@ -1636,13 +1619,20 @@ End-devices that can be activated in territories that are using different freque
 
 ### 21.3 Revision 1.0.2
 
-- Extracted section 7 "Physical layer" that will now be a separated document "LoRaWAN Regional Parameters"
+- Extracted section 7 "Physical layer" that will now be a separated document "LoRaWAN Regional physical layers definition"
 - corrected the ADR_backoff  sequence description (ADR_ACK_LIMT was written instead of ADR_ACK_DELAY) paragraph 4.3.1.1
 - Corrected a formatting issue in the title of section 18.2 (previously section 19.2 in the 1.0.1 version)
 - Added the DlChannelRec MAC command, this command is used to modify the frequency at which an end-device expects a downlink.
 - Added the Tx ParamSetupRec MAC command. This command enables to remotely modify the maximum TX dwell time and the maximum  radio transmit power of a device in certain regions
 - Added the ability for the end-device to process several ADRreq commands in a single block in 5.2
 - Clarified AppKey definition
+
+### 21.4 Revision 1.0.3
+
+- Imported the classB chapter from the LoRaWAN1.1 specification 
+- Added the DeviceTimeReq/Ans MAC command in the classA chapter, those commands are required for the classB beacon acquisition, the MAC commands BeaconTimingReq/Ans are deprecated.
+- Corrected incorrect GPS epoch references
+- Corrected various typos
 
 ## 22 Glossary
 
@@ -1688,11 +1678,11 @@ End-devices that can be activated in territories that are using different freque
 
 \[RFC4493\]: The AES-CMAC Algorithm, June 2006.
 
-[PARAMS]: LoRaWAN Regional Parameters, the LoRa Alliance, October 2016 (and future versions).
+[RPD1] : LoRa Alliance 2018, RPD_Remote_Multicast_Setup_v1.0.0
 
 ## 25 NOTICE OF USE AND DISCLOSURE
 
-Copyright © LoRa Alliance, Inc. (2015). All Rights Reserved.
+Copyright © LoRa Alliance, Inc. (2017). All Rights Reserved.
 
 The information within this document is the property of the LoRa Alliance ("The Alliance") and its use and disclosure are subject to LoRa Alliance Corporate Bylaws, Intellectual Property Rights (IPR) Policy and Membership Agreements.
 
@@ -1706,8 +1696,8 @@ The above notice and this paragraph must be included on all copies of this docum
 
 LoRa Alliance, Inc.
 
-2400 Camino Ramon, Suite 375
+3855 SW 153rd Drive
 
-San Ramon, CA 94583
+Beaverton, OR  97007
 
 *Note: All Company, brand and product names may be trademarks that are the sole property of their respective owners*.
